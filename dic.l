@@ -1,5 +1,5 @@
 %{
-    // #include "y.tab.h"
+    #include "y.tab.h"
     int countn=0;
 %}
 
@@ -13,50 +13,47 @@ unary "++"|"--"
 
 %%
 
-"imprime"                      { printf("PRINTFF\n"); }
-"leia"                         { printf("SCANFF\n"); }
-"inteiro"                      { printf("INT\n"); }
-"decimal"                      { printf("FLOAT\n"); }
-"caracter"                     { printf("CHAR\n"); }
-"palavra"                      { printf("STRING\n"); }   
-"vazio"                        { printf("VOID\n"); }
-"retorne"                      { printf("RETURN\n"); }
-"enquanto"	                   { printf("WHILE\n"); }
-"se"	                       { printf("IF\n"); }
-"senao"	                       { printf("ELSE\n"); }
-"forma"                        { printf("CLASS\n"); }
-^"#include"[ ]*<.+\.h>         { printf("INCLUDE\n"); }
-[-]?{digit}+                   { printf("NUMBER\n"); }
-[-]?{digit}+\.{digit}{1,6}     { printf("FLOAT_NUM\n"); }
-{alphaMin}({alpha}|{digit})*   { printf("ID\n"); }
-{alphaMax}{alpha}              { printf("CLASS_NAME\n"); }
-{unary}                        { printf("UNARY\n"); }
-"<="                           { printf("LE\n"); }
-">="                           { printf("GE\n"); }
-"=="                           { printf("EQ\n"); }
-"!="                           { printf("NE\n"); }
-">"	                           { printf("GT\n"); }
-"<"	                           { printf("LT\n"); }
-"&&"	                       { printf("AND\n"); }
-"||"	                       { printf("OR\n"); }
-"+"                            { printf("ADD\n"); }
-"-"                            { printf("SUBTRACT\n"); }
-"/"                            { printf("DIVIDE\n"); }
-"*"                            { printf("MULTIPLY\n"); }
+"principal"                    { return TK_MAIN; }
+"imprime"                      { return TK_PRINTF; }
+"leia"                         { return TK_SCANFF; }
+"inteiro"                      { return TK_TYPE_INT; }
+"decimal"                      { return TK_TYPE_FLOAT; }
+"caracter"                     { return TK_TYPE_CHAR; }
+"palavra"                      { return TK_TYPE_STRING; }    
+"vazio"                        { return TK_VOID; }
+"retorne"                      { return TK_RETURN; }
+"enquanto"	                   { return TK_WHILE; }
+"se"	                       { return TK_IF; }
+"senao"	                       { return TK_ELSE; }
+"forma"                        { return TK_CLASS; }
+^"#include"[ ]*<.+\.h>         { return TK_INCLUDE; }
+[-]?{digit}+                   { return TK_NUMBER; }
+[-]?{digit}+\.{digit}{1,6}     { return TK_FLOAT_NUM; }
+{alphaMin}({alpha}|{digit})*   { return TK_ID; }
+{alphaMax}{alpha}              { return TK_CLASS_NAME; }
+{unary}                        { return TK_UNARY; }
+"<="                           { return TK_LE; }
+">="                           { return TK_GE; }
+"=="                           { return TK_EQ; }
+"!="                           { return TK_NE; }
+">"	                           { return TK_GT; }
+"<"	                           { return TK_LT; }
+"&&"	                       { return TK_AND; }
+"||"	                       { return TK_OR; }
+"+"                            { return TK_ADD; }
+"-"                            { return TK_SUBTRACT; }
+"/"                            { return TK_DIVIDE; }
+"*"                            { return TK_MULTIPLY; }
 \/\/.*                         { ; }
 \/\*(.*\n)*.*\*\/              { ; } 
 [ \t]*                         { ; }
 [\n]                           { countn++; }
-.	                           { printf(" yytext\n"); }
-["].*["]                       { printf("STR\n"); }
-['].[']                        { printf("CHARACTER\n"); }
+.	                           { return *yytext;  }
+["].*["]                       { return TK_STRING; }
+['].[']                        { return TK_CHAR; }
 
 %%
 
-int main(){
-    yylex();
-}
-
 int yywrap() {
-    printf("1\n");
+    return 1;
 }
