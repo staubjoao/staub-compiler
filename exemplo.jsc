@@ -3,4 +3,4 @@ inteiro x = 35;
 
 imprime 2;
 
-imprime 2 + 1;
+imprime 2 + 5;

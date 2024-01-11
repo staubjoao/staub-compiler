@@ -26,8 +26,8 @@ unary "++"|"--"
 "se"	                       { return TK_IF; }
 "senao"	                       { return TK_ELSE; }
 "forma"                        { return TK_CLASS; }
-^"#include"[ ]*<.+\.h>         { return TK_INCLUDE; }
-[-]?{digit}+                   { return TK_NUMBER; }
+^"#include"[ ]*<.+\.h>         { yylval.strval = strdup(yytext); return TK_INCLUDE; }
+[-]?{digit}+                   { yylval.intval = atoi(yytext); return TK_NUMBER; }
 [-]?{digit}+\.{digit}{1,6}     { return TK_FLOAT_NUM; }
 {alphaMin}({alpha}|{digit})*   { return TK_ID; }
 {alphaMax}{alpha}              { return TK_CLASS_NAME; }

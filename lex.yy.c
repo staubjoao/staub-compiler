@@ -928,12 +928,12 @@ YY_RULE_SETUP
 case 14:
 YY_RULE_SETUP
 #line 29 "dic.l"
-{ return TK_INCLUDE; }
+{ yylval.strval = strdup(yytext); return TK_INCLUDE; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 30 "dic.l"
-{ return TK_NUMBER; }
+{ yylval.intval = atoi(yytext); return TK_NUMBER; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
