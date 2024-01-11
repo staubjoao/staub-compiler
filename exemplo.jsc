@@ -1,1 +1,6 @@
+inteiro y;
 inteiro x = 35;
+
+imprime 2;
+
+imprime 2 + 1;
