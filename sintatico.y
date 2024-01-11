@@ -27,6 +27,7 @@
 %token TK_FLOAT_NUM
 %token TK_ID
 %token TK_CLASS_NAME
+%token TK_METHOD_NAME
 %token TK_UNARY
 %token TK_LE
 %token TK_GE
@@ -45,17 +46,7 @@
 
 %% 
 
-declaration: datatype TK_ID '=' value
-| datatype TK_ID
-;
-datatype: TK_TYPE_INT
-| TK_TYPE_FLOAT
-| TK_TYPE_CHAR
-;
-value: TK_NUMBER
-| TK_FLOAT_NUM
-| TK_CHAR
-;
+type_decl_int: TK_TYPE_INT TK_ID '=' TK_NUMBER ';' { printf("Teste"); }; 
 
 %%
 

@@ -72,21 +72,22 @@ extern int yydebug;
     TK_FLOAT_NUM = 273,            /* TK_FLOAT_NUM  */
     TK_ID = 274,                   /* TK_ID  */
     TK_CLASS_NAME = 275,           /* TK_CLASS_NAME  */
-    TK_UNARY = 276,                /* TK_UNARY  */
-    TK_LE = 277,                   /* TK_LE  */
-    TK_GE = 278,                   /* TK_GE  */
-    TK_EQ = 279,                   /* TK_EQ  */
-    TK_NE = 280,                   /* TK_NE  */
-    TK_GT = 281,                   /* TK_GT  */
-    TK_LT = 282,                   /* TK_LT  */
-    TK_AND = 283,                  /* TK_AND  */
-    TK_OR = 284,                   /* TK_OR  */
-    TK_ADD = 285,                  /* TK_ADD  */
-    TK_SUBTRACT = 286,             /* TK_SUBTRACT  */
-    TK_DIVIDE = 287,               /* TK_DIVIDE  */
-    TK_MULTIPLY = 288,             /* TK_MULTIPLY  */
-    TK_STRING = 289,               /* TK_STRING  */
-    TK_CHAR = 290                  /* TK_CHAR  */
+    TK_METHOD_NAME = 276,          /* TK_METHOD_NAME  */
+    TK_UNARY = 277,                /* TK_UNARY  */
+    TK_LE = 278,                   /* TK_LE  */
+    TK_GE = 279,                   /* TK_GE  */
+    TK_EQ = 280,                   /* TK_EQ  */
+    TK_NE = 281,                   /* TK_NE  */
+    TK_GT = 282,                   /* TK_GT  */
+    TK_LT = 283,                   /* TK_LT  */
+    TK_AND = 284,                  /* TK_AND  */
+    TK_OR = 285,                   /* TK_OR  */
+    TK_ADD = 286,                  /* TK_ADD  */
+    TK_SUBTRACT = 287,             /* TK_SUBTRACT  */
+    TK_DIVIDE = 288,               /* TK_DIVIDE  */
+    TK_MULTIPLY = 289,             /* TK_MULTIPLY  */
+    TK_STRING = 290,               /* TK_STRING  */
+    TK_CHAR = 291                  /* TK_CHAR  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -113,21 +114,22 @@ extern int yydebug;
 #define TK_FLOAT_NUM 273
 #define TK_ID 274
 #define TK_CLASS_NAME 275
-#define TK_UNARY 276
-#define TK_LE 277
-#define TK_GE 278
-#define TK_EQ 279
-#define TK_NE 280
-#define TK_GT 281
-#define TK_LT 282
-#define TK_AND 283
-#define TK_OR 284
-#define TK_ADD 285
-#define TK_SUBTRACT 286
-#define TK_DIVIDE 287
-#define TK_MULTIPLY 288
-#define TK_STRING 289
-#define TK_CHAR 290
+#define TK_METHOD_NAME 276
+#define TK_UNARY 277
+#define TK_LE 278
+#define TK_GE 279
+#define TK_EQ 280
+#define TK_NE 281
+#define TK_GT 282
+#define TK_LT 283
+#define TK_AND 284
+#define TK_OR 285
+#define TK_ADD 286
+#define TK_SUBTRACT 287
+#define TK_DIVIDE 288
+#define TK_MULTIPLY 289
+#define TK_STRING 290
+#define TK_CHAR 291
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

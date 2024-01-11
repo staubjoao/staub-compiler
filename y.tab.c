@@ -141,21 +141,22 @@ extern int yydebug;
     TK_FLOAT_NUM = 273,            /* TK_FLOAT_NUM  */
     TK_ID = 274,                   /* TK_ID  */
     TK_CLASS_NAME = 275,           /* TK_CLASS_NAME  */
-    TK_UNARY = 276,                /* TK_UNARY  */
-    TK_LE = 277,                   /* TK_LE  */
-    TK_GE = 278,                   /* TK_GE  */
-    TK_EQ = 279,                   /* TK_EQ  */
-    TK_NE = 280,                   /* TK_NE  */
-    TK_GT = 281,                   /* TK_GT  */
-    TK_LT = 282,                   /* TK_LT  */
-    TK_AND = 283,                  /* TK_AND  */
-    TK_OR = 284,                   /* TK_OR  */
-    TK_ADD = 285,                  /* TK_ADD  */
-    TK_SUBTRACT = 286,             /* TK_SUBTRACT  */
-    TK_DIVIDE = 287,               /* TK_DIVIDE  */
-    TK_MULTIPLY = 288,             /* TK_MULTIPLY  */
-    TK_STRING = 289,               /* TK_STRING  */
-    TK_CHAR = 290                  /* TK_CHAR  */
+    TK_METHOD_NAME = 276,          /* TK_METHOD_NAME  */
+    TK_UNARY = 277,                /* TK_UNARY  */
+    TK_LE = 278,                   /* TK_LE  */
+    TK_GE = 279,                   /* TK_GE  */
+    TK_EQ = 280,                   /* TK_EQ  */
+    TK_NE = 281,                   /* TK_NE  */
+    TK_GT = 282,                   /* TK_GT  */
+    TK_LT = 283,                   /* TK_LT  */
+    TK_AND = 284,                  /* TK_AND  */
+    TK_OR = 285,                   /* TK_OR  */
+    TK_ADD = 286,                  /* TK_ADD  */
+    TK_SUBTRACT = 287,             /* TK_SUBTRACT  */
+    TK_DIVIDE = 288,               /* TK_DIVIDE  */
+    TK_MULTIPLY = 289,             /* TK_MULTIPLY  */
+    TK_STRING = 290,               /* TK_STRING  */
+    TK_CHAR = 291                  /* TK_CHAR  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -182,21 +183,22 @@ extern int yydebug;
 #define TK_FLOAT_NUM 273
 #define TK_ID 274
 #define TK_CLASS_NAME 275
-#define TK_UNARY 276
-#define TK_LE 277
-#define TK_GE 278
-#define TK_EQ 279
-#define TK_NE 280
-#define TK_GT 281
-#define TK_LT 282
-#define TK_AND 283
-#define TK_OR 284
-#define TK_ADD 285
-#define TK_SUBTRACT 286
-#define TK_DIVIDE 287
-#define TK_MULTIPLY 288
-#define TK_STRING 289
-#define TK_CHAR 290
+#define TK_METHOD_NAME 276
+#define TK_UNARY 277
+#define TK_LE 278
+#define TK_GE 279
+#define TK_EQ 280
+#define TK_NE 281
+#define TK_GT 282
+#define TK_LT 283
+#define TK_AND 284
+#define TK_OR 285
+#define TK_ADD 286
+#define TK_SUBTRACT 287
+#define TK_DIVIDE 288
+#define TK_MULTIPLY 289
+#define TK_STRING 290
+#define TK_CHAR 291
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -238,26 +240,26 @@ enum yysymbol_kind_t
   YYSYMBOL_TK_FLOAT_NUM = 18,              /* TK_FLOAT_NUM  */
   YYSYMBOL_TK_ID = 19,                     /* TK_ID  */
   YYSYMBOL_TK_CLASS_NAME = 20,             /* TK_CLASS_NAME  */
-  YYSYMBOL_TK_UNARY = 21,                  /* TK_UNARY  */
-  YYSYMBOL_TK_LE = 22,                     /* TK_LE  */
-  YYSYMBOL_TK_GE = 23,                     /* TK_GE  */
-  YYSYMBOL_TK_EQ = 24,                     /* TK_EQ  */
-  YYSYMBOL_TK_NE = 25,                     /* TK_NE  */
-  YYSYMBOL_TK_GT = 26,                     /* TK_GT  */
-  YYSYMBOL_TK_LT = 27,                     /* TK_LT  */
-  YYSYMBOL_TK_AND = 28,                    /* TK_AND  */
-  YYSYMBOL_TK_OR = 29,                     /* TK_OR  */
-  YYSYMBOL_TK_ADD = 30,                    /* TK_ADD  */
-  YYSYMBOL_TK_SUBTRACT = 31,               /* TK_SUBTRACT  */
-  YYSYMBOL_TK_DIVIDE = 32,                 /* TK_DIVIDE  */
-  YYSYMBOL_TK_MULTIPLY = 33,               /* TK_MULTIPLY  */
-  YYSYMBOL_TK_STRING = 34,                 /* TK_STRING  */
-  YYSYMBOL_TK_CHAR = 35,                   /* TK_CHAR  */
-  YYSYMBOL_36_ = 36,                       /* '='  */
-  YYSYMBOL_YYACCEPT = 37,                  /* $accept  */
-  YYSYMBOL_declaration = 38,               /* declaration  */
-  YYSYMBOL_datatype = 39,                  /* datatype  */
-  YYSYMBOL_value = 40                      /* value  */
+  YYSYMBOL_TK_METHOD_NAME = 21,            /* TK_METHOD_NAME  */
+  YYSYMBOL_TK_UNARY = 22,                  /* TK_UNARY  */
+  YYSYMBOL_TK_LE = 23,                     /* TK_LE  */
+  YYSYMBOL_TK_GE = 24,                     /* TK_GE  */
+  YYSYMBOL_TK_EQ = 25,                     /* TK_EQ  */
+  YYSYMBOL_TK_NE = 26,                     /* TK_NE  */
+  YYSYMBOL_TK_GT = 27,                     /* TK_GT  */
+  YYSYMBOL_TK_LT = 28,                     /* TK_LT  */
+  YYSYMBOL_TK_AND = 29,                    /* TK_AND  */
+  YYSYMBOL_TK_OR = 30,                     /* TK_OR  */
+  YYSYMBOL_TK_ADD = 31,                    /* TK_ADD  */
+  YYSYMBOL_TK_SUBTRACT = 32,               /* TK_SUBTRACT  */
+  YYSYMBOL_TK_DIVIDE = 33,                 /* TK_DIVIDE  */
+  YYSYMBOL_TK_MULTIPLY = 34,               /* TK_MULTIPLY  */
+  YYSYMBOL_TK_STRING = 35,                 /* TK_STRING  */
+  YYSYMBOL_TK_CHAR = 36,                   /* TK_CHAR  */
+  YYSYMBOL_37_ = 37,                       /* '='  */
+  YYSYMBOL_38_ = 38,                       /* ';'  */
+  YYSYMBOL_YYACCEPT = 39,                  /* $accept  */
+  YYSYMBOL_type_decl_int = 40              /* type_decl_int  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -583,21 +585,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  6
+#define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   18
+#define YYLAST   5
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  37
+#define YYNTOKENS  39
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  4
+#define YYNNTS  2
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  9
+#define YYNRULES  2
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  13
+#define YYNSTATES  8
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   290
+#define YYMAXUTOK   291
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -616,8 +618,8 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    36,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    38,
+       2,    37,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -640,14 +642,14 @@ static const yytype_int8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35
+      35,    36
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    48,    48,    49,    51,    52,    53,    55,    56,    57
+       0,    49,    49
 };
 #endif
 
@@ -667,10 +669,10 @@ static const char *const yytname[] =
   "TK_SCANFF", "TK_TYPE_INT", "TK_TYPE_FLOAT", "TK_TYPE_CHAR",
   "TK_TYPE_STRING", "TK_VOID", "TK_RETURN", "TK_WHILE", "TK_IF", "TK_ELSE",
   "TK_CLASS", "TK_INCLUDE", "TK_NUMBER", "TK_FLOAT_NUM", "TK_ID",
-  "TK_CLASS_NAME", "TK_UNARY", "TK_LE", "TK_GE", "TK_EQ", "TK_NE", "TK_GT",
-  "TK_LT", "TK_AND", "TK_OR", "TK_ADD", "TK_SUBTRACT", "TK_DIVIDE",
-  "TK_MULTIPLY", "TK_STRING", "TK_CHAR", "'='", "$accept", "declaration",
-  "datatype", "value", YY_NULLPTR
+  "TK_CLASS_NAME", "TK_METHOD_NAME", "TK_UNARY", "TK_LE", "TK_GE", "TK_EQ",
+  "TK_NE", "TK_GT", "TK_LT", "TK_AND", "TK_OR", "TK_ADD", "TK_SUBTRACT",
+  "TK_DIVIDE", "TK_MULTIPLY", "TK_STRING", "TK_CHAR", "'='", "';'",
+  "$accept", "type_decl_int", YY_NULLPTR
 };
 
 static const char *
@@ -680,7 +682,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-30)
+#define YYPACT_NINF (-35)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -694,8 +696,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -4,   -30,   -30,   -30,     5,   -13,   -30,   -29,   -17,   -30,
-     -30,   -30,   -30
+      -6,   -18,     2,   -34,   -35,   -13,   -33,   -35
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -703,20 +704,19 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     4,     5,     6,     0,     0,     1,     3,     0,     7,
-       8,     9,     2
+       0,     0,     0,     0,     1,     0,     0,     2
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -30,   -30,   -30,   -30
+     -35,   -35
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     4,     5,    12
+       0,     2
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -724,34 +724,31 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       9,    10,     1,     2,     3,     6,     7,     8,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,    11
+       1,     3,     4,     5,     6,     7
 };
 
 static const yytype_int8 yycheck[] =
 {
-      17,    18,     6,     7,     8,     0,    19,    36,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    35
+       6,    19,     0,    37,    17,    38
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     6,     7,     8,    38,    39,     0,    19,    36,    17,
-      18,    35,    40
+       0,     6,    40,    19,     0,    37,    17,    38
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    37,    38,    38,    39,    39,    39,    40,    40,    40
+       0,    39,    40
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     4,     2,     1,     1,     1,     1,     1,     1
+       0,     2,     5
 };
 
 
@@ -1214,8 +1211,14 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
+  case 2: /* type_decl_int: TK_TYPE_INT TK_ID '=' TK_NUMBER ';'  */
+#line 49 "sintatico.y"
+                                                   { printf("Teste"); }
+#line 1218 "y.tab.c"
+    break;
 
-#line 1219 "y.tab.c"
+
+#line 1222 "y.tab.c"
 
       default: break;
     }
@@ -1408,7 +1411,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 60 "sintatico.y"
+#line 52 "sintatico.y"
 
 
 int main() {

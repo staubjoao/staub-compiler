@@ -31,6 +31,7 @@ unary "++"|"--"
 [-]?{digit}+\.{digit}{1,6}     { return TK_FLOAT_NUM; }
 {alphaMin}({alpha}|{digit})*   { return TK_ID; }
 {alphaMax}{alpha}              { return TK_CLASS_NAME; }
+{alpha}({alphaMax}|{digit})    { return TK_METHOD_NAME; }
 {unary}                        { return TK_UNARY; }
 "<="                           { return TK_LE; }
 ">="                           { return TK_GE; }
