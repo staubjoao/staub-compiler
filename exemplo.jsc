@@ -1,6 +1,3 @@
-inteiro y;
-inteiro x = 35;
+vazio main() {
 
-imprime 2;
-
-imprime 2 + 5;
+}
