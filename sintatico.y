@@ -311,35 +311,6 @@ return: TK_RETURN { add('K'); } value ';' { check_return_type($3.name); $1.nd = 
 | { $$.nd = NULL; }
 ;
 
-
-/* 
-program: line
-| program line
-;
-
-line: type_decl_int
-| TK_PRINTF expr ';' { printf("%d\n", $2); }
-| TK_PRINTF TK_NUMBER ';' { printf("%d\n", $2); }
-;
-
-
-type_decl_int: 
-TK_TYPE_INT TK_ID '=' TK_NUMBER ';' { printf("declarou com valor\n"); }
-| TK_TYPE_INT TK_ID ';' { printf("declarou sem valor\n"); }
-;
-
-expr: term
-| expr TK_ADD term { $$ = $1 + $3; }
-| expr TK_SUBTRACT term { $$ = $1 - $3; } 
-| expr TK_MULTIPLY term { $$ = $1 * $3; } 
-;
-
-term: TK_NUMBER { $$ = $1; }
-;
-
-
-*/
-
 %%
 
 int main() {
