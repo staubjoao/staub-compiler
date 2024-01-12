@@ -135,7 +135,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 13 "sintatico.y"
+#line 24 "sintatico.y"
 
     int intval;
     char* strval;

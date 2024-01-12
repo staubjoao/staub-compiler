@@ -74,12 +74,23 @@
     #include<stdlib.h>
     #include<ctype.h>
     #include"lex.yy.c"
+
+    struct node* mknode(struct node *left, struct node *right, char *token);
+
     
     void yyerror(const char *s);
     int yylex();
     int yywrap();
 
-#line 83 "y.tab.c"
+    char reserved[10][10] = {"inteiro", "decimal", "caracter", "vazio", "se", "senao", "forma", "principal", "retorne", "include"};
+
+    struct node { 
+		struct node *left; 
+		struct node *right; 
+		char *token; 
+	};
+
+#line 94 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -204,12 +215,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 13 "sintatico.y"
+#line 24 "sintatico.y"
 
     int intval;
     char* strval;
 
-#line 213 "y.tab.c"
+#line 224 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -663,8 +674,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    62,    62,    63,    66,    67,    68,    77,    78,    81,
-      82,    83,    84,    87
+       0,    73,    73,    74,    77,    78,    79,    88,    89,    92,
+      93,    94,    95,    98
 };
 #endif
 
@@ -1239,55 +1250,55 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* line: TK_PRINTF expr ';'  */
-#line 67 "sintatico.y"
+#line 78 "sintatico.y"
                      { printf("%d\n", (yyvsp[-1].intval)); }
-#line 1245 "y.tab.c"
+#line 1256 "y.tab.c"
     break;
 
   case 6: /* line: TK_PRINTF TK_NUMBER ';'  */
-#line 68 "sintatico.y"
+#line 79 "sintatico.y"
                           { printf("%d\n", (yyvsp[-1].intval)); }
-#line 1251 "y.tab.c"
+#line 1262 "y.tab.c"
     break;
 
   case 7: /* type_decl_int: TK_TYPE_INT TK_ID '=' TK_NUMBER ';'  */
-#line 77 "sintatico.y"
+#line 88 "sintatico.y"
                                     { printf("declarou com valor\n"); }
-#line 1257 "y.tab.c"
+#line 1268 "y.tab.c"
     break;
 
   case 8: /* type_decl_int: TK_TYPE_INT TK_ID ';'  */
-#line 78 "sintatico.y"
+#line 89 "sintatico.y"
                         { printf("declarou sem valor\n"); }
-#line 1263 "y.tab.c"
+#line 1274 "y.tab.c"
     break;
 
   case 10: /* expr: expr TK_ADD term  */
-#line 82 "sintatico.y"
-                   { (yyval.intval) = (yyvsp[-2].intval) + (yyvsp[0].intval); { printf("%d\n", (yyvsp[-2].intval)); } }
-#line 1269 "y.tab.c"
+#line 93 "sintatico.y"
+                   { (yyval.intval) = (yyvsp[-2].intval) + (yyvsp[0].intval); }
+#line 1280 "y.tab.c"
     break;
 
   case 11: /* expr: expr TK_SUBTRACT term  */
-#line 83 "sintatico.y"
+#line 94 "sintatico.y"
                         { (yyval.intval) = (yyvsp[-2].intval) - (yyvsp[0].intval); }
-#line 1275 "y.tab.c"
+#line 1286 "y.tab.c"
     break;
 
   case 12: /* expr: expr TK_MULTIPLY term  */
-#line 84 "sintatico.y"
+#line 95 "sintatico.y"
                         { (yyval.intval) = (yyvsp[-2].intval) * (yyvsp[0].intval); }
-#line 1281 "y.tab.c"
+#line 1292 "y.tab.c"
     break;
 
   case 13: /* term: TK_NUMBER  */
-#line 87 "sintatico.y"
+#line 98 "sintatico.y"
                 { (yyval.intval) = (yyvsp[0].intval); }
-#line 1287 "y.tab.c"
+#line 1298 "y.tab.c"
     break;
 
 
-#line 1291 "y.tab.c"
+#line 1302 "y.tab.c"
 
       default: break;
     }
@@ -1480,8 +1491,18 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 96 "sintatico.y"
+#line 107 "sintatico.y"
 
+
+struct node* mknode(struct node *left, struct node *right, char *token) {	
+	struct node *newnode = (struct node *)malloc(sizeof(struct node));
+	char *newstr = (char *)malloc(strlen(token)+1);
+	strcpy(newstr, token);
+	newnode->left = left;
+	newnode->right = right;
+	newnode->token = newstr;
+	return(newnode);
+}
 
 int main() {
     yyparse();
