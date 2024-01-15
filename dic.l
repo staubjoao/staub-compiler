@@ -16,13 +16,14 @@ unary "++"|"--"
 "leia"                          { strcpy(yylval.nd_obj.name,(yytext)); return TK_SCANF; }
 "inteiro"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_INT; }
 "decimal"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_FLOAT; }
-"caracter"                      { strcpy(yylval.nd_obj.name,(yytext)); return TK_CHAR; }
+"caracter"                      { strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_CHAR; }
 "vazio"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_VOID; }
 "return"                        { strcpy(yylval.nd_obj.name,(yytext)); return TK_RETURN; }
 "enquanto"	                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_FOR; }
 "se"	                        { strcpy(yylval.nd_obj.name,(yytext)); return TK_IF; }
 "senao"	                        { strcpy(yylval.nd_obj.name,(yytext)); return TK_ELSE; }
 "forma"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION; }
+"Principal"                     { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION_MAIN; }
 ^"#include"[ ]*<.+\.h>          { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE; }
 "true"                          { strcpy(yylval.nd_obj.name,(yytext)); return TK_TRUE; }
 "false"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_FALSE; }
