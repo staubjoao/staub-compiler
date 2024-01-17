@@ -6,6 +6,7 @@
 %option yylineno
 
 alphaMax [A-Z]
+alphaMin [a-z]
 alpha [a-zA-Z]
 digit [0-9]
 unary "++"|"--"
@@ -17,6 +18,7 @@ unary "++"|"--"
 "inteiro"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_INT; }
 "decimal"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_FLOAT; }
 "caracter"                      { strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_CHAR; }
+"palavra"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_STRING; }
 "vazio"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_VOID; }
 "return"                        { strcpy(yylval.nd_obj.name,(yytext)); return TK_RETURN; }
 "enquanto"	                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_FOR; }
@@ -29,8 +31,8 @@ unary "++"|"--"
 "false"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_FALSE; }
 [-]?{digit}+                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_NUMBER; }
 [-]?{digit}+\.{digit}{1,6}      { strcpy(yylval.nd_obj.name,(yytext)); return TK_NUMBER_FLOAT; }
-{alpha}({alpha}|{digit})*       { strcpy(yylval.nd_obj.name,(yytext)); return TK_ID; }
-{alphaMax}({alpha}|{digit})*    { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_NAME; }
+{alphaMax}{alpha}+              { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_NAME; }
+{alphaMin}({alpha}|{digit})*    { strcpy(yylval.nd_obj.name,(yytext)); return TK_ID; }
 {unary}                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_UNARY; }
 "<="                            { strcpy(yylval.nd_obj.name,(yytext)); return TK_LE; }
 ">="                            { strcpy(yylval.nd_obj.name,(yytext)); return TK_GE; }

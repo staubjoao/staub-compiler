@@ -19,7 +19,7 @@ debug:	PARSER_PARAMS += -Wcounterexamples
 debug: 	all
 
 translate: glf
-		./glf < Animal.jsc
+		./glf < Circulo.jsc
 
 clear:
 	rm y.tab.c
