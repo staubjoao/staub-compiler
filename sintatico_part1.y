@@ -8,6 +8,22 @@
     void yyerror(const char *s);
     int yylex();
     int yywrap();
+    void add(char);
+    void insert_type();
+    int search(char *);
+    void insert_type();
+
+    struct dataType {
+        char * id_name;
+        char * data_type;
+        char * type;
+        int line_no;
+    } symbol_table[40];
+
+    int count=0;
+    int q;
+    char type[10];
+    extern int countn;
 %}
 
 %union { struct var_name { 
@@ -20,13 +36,24 @@
 
 %%
 
-class: headers class_defination '{' class_body '}'
+program: headers program
+| class program
+| main_class program
+| 
+;
+
+class: class_defination '{' class_body '}' { printf("Classe\n"); }
+| headers TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN program
+;
+
+main_class: main_class_defination '{' class_body '}'
 | headers TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN program
 ;
 
 class_body: class_atributes
 | class_method
 | class_body class_body
+|
 ;
 
 class_method: datatype TK_ID '(' atributs_method ')' '{' body  return '}' { printf("Teste!!\n"); }
@@ -44,7 +71,7 @@ class_atributes: statement_atributes ';' { printf("Atributo da classe!\n"); }
 class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { printf("Classe!\n"); }
 ;
 
-program: headers main '(' ')' '{' body return '}'
+main_class_defination: TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN { printf("Classe princiapl!\n"); }
 ;
 
 headers: headers headers
@@ -124,6 +151,59 @@ return: TK_RETURN value ';'
 ;
 
 %%
+
+void insert_type() {
+    strcpy(type, yytext);
+}
+
+void add(char c) {
+    q=search(yytext);
+    if(!q) {
+        if(c == 'H') {
+            symbol_table[count].id_name=strdup(yytext);        
+            symbol_table[count].data_type=strdup(type);     
+            symbol_table[count].line_no=countn;    
+            symbol_table[count].type=strdup("Header");
+            count++;  
+        }  
+        else if(c == 'K') {
+            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].data_type=strdup("N/A");
+            symbol_table[count].line_no=countn;
+            symbol_table[count].type=strdup("Keyword\t");   
+            count++;  
+        }  else if(c == 'V') {
+            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].data_type=strdup(type);
+            symbol_table[count].line_no=countn;
+            symbol_table[count].type=strdup("Variable");   
+            count++;  
+        }  else if(c == 'C') {
+            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].data_type=strdup("CONST");
+            symbol_table[count].line_no=countn;
+            symbol_table[count].type=strdup("Constant");   
+            count++;  
+        }  else if(c == 'F') {
+            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].data_type=strdup(type);
+            symbol_table[count].line_no=countn;
+            symbol_table[count].type=strdup("Function");   
+            count++;  
+        }
+    }
+}
+
+int search(char *type) { 
+    int i; 
+    for(i=count-1; i>=0; i--) {
+        if(strcmp(symbol_table[i].id_name, type)==0) {   
+            return -1;
+            break;  
+        }
+    } 
+    return 0;
+}
 
 int main() {
     yyparse();

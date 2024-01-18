@@ -1,9 +1,30 @@
 #include <stdio.h>
 
-vazio main() {
-    inteiro x;
+forma Circulo {
 
-    x = 35;
+    palavra cor;
+    decimal raio;
+    decimal pi = 3.14;
 
-    imprime("Teste");
+    decimal calculaArea(inteiro teste, decimal teste2) {
+        decimal area;
+        area = pi * (raio * raio);
+        return area;
+    }
+
+    decimal calcularCircuferencia() {
+        decimal circuferencia = 2 * raio * pi;
+        imprime("teste");
+        return circuferencia;
+    }
+}
+
+forma Principal {
+    vazio principal() {
+        inteiro x;
+
+        x = 35;
+
+        imprime("Teste");
+    }
 }
