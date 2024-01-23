@@ -23,6 +23,10 @@ forma Principal {
     vazio principal() {
         inteiro x;
 
+        Circulo circulo = Circulo();
+
+        circulo.raio = 5.1;
+
         x = 35;
 
         imprime("Teste");

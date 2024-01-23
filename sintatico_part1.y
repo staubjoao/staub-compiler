@@ -78,9 +78,6 @@ headers: headers headers
 | TK_INCLUDE { printf("Header!\n"); }
 ;
 
-main: datatype TK_ID
-;
-
 datatype: TK_TYPE_INT 
 | TK_TYPE_FLOAT 
 | TK_TYPE_CHAR
@@ -91,9 +88,13 @@ datatype: TK_TYPE_INT
 body: TK_FOR '(' statement ';' condition ';' statement ')' '{' body '}'
 | TK_IF '(' condition ')' '{' body '}' else
 | statement ';' 
+| statement_class ';'
 | body body
 | TK_PRINTF '(' TK_STRING ')' ';'
 | TK_SCANF '(' TK_STRING ',' '&' TK_ID ')' ';'
+;
+
+statement_class: TK_CLASS_NAME TK_ID '=' TK_CLASS_NAME '(' ')'
 ;
 
 else: TK_ELSE '{' body '}'
@@ -114,6 +115,7 @@ statement: datatype TK_ID
 | TK_ID relop expression
 | TK_ID TK_UNARY 
 | TK_UNARY TK_ID
+| TK_ID '.' TK_ID init
 ;
 
 init: '=' value 
