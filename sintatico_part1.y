@@ -68,14 +68,14 @@ atributs_method: datatype TK_ID ',' atributs_method { printf("atributo1!\n"); }
 class_atributes: statement_atributes ';' { printf("Atributo da classe!\n"); }
 ;
 
-class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { printf("Classe!\n"); }
+class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { printf("Classe! %s\n", $2); }
 ;
 
 main_class_defination: TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN { printf("Classe princiapl!\n"); }
 ;
 
 headers: headers headers
-| TK_INCLUDE { printf("Header!\n"); }
+| TK_INCLUDE { printf("Header! %s\n", $1); }
 ;
 
 datatype: TK_TYPE_INT 

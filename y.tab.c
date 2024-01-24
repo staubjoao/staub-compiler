@@ -1417,7 +1417,7 @@ yyreduce:
 
   case 20: /* class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME  */
 #line 71 "sintatico_part1.y"
-                                                    { printf("Classe!\n"); }
+                                                    { printf("Classe! %s\n", (yyvsp[0].nd_obj)); }
 #line 1422 "y.tab.c"
     break;
 
@@ -1429,7 +1429,7 @@ yyreduce:
 
   case 23: /* headers: TK_INCLUDE  */
 #line 78 "sintatico_part1.y"
-             { printf("Header!\n"); }
+             { printf("Header! %s\n", (yyvsp[0].nd_obj)); }
 #line 1434 "y.tab.c"
     break;
 
