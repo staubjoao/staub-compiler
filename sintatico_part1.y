@@ -37,9 +37,9 @@
 %%
 
 program: headers program
-| class program
+| class program 
 | main_class program
-| 
+|
 ;
 
 class: class_defination '{' class_body '}' { printf("Classe\n"); }
@@ -47,35 +47,33 @@ class: class_defination '{' class_body '}' { printf("Classe\n"); }
 ;
 
 main_class: main_class_defination '{' class_body '}'
-| headers TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN program
+/* | headers TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN program */
 ;
 
-class_body: class_atributes
-| class_method
-| class_body class_body
+class_body: class_atributes class_body
+| class_method class_body
 |
 ;
 
-class_method: datatype TK_ID '(' atributs_method ')' '{' body  return '}' { printf("Teste!!\n"); }
+class_method: datatype TK_ID '(' atributs_method ')' '{' body return '}' { printf("Teste!!\n"); }
 ;
 
 atributs_method: datatype TK_ID ',' atributs_method { printf("atributo1!\n"); }
 | datatype TK_ID { printf("atributo2!\n"); }
-| atributs_method
+/* | atributs_method */
 |
 ;
 
 class_atributes: statement_atributes ';' { printf("Atributo da classe!\n"); }
 ;
 
-class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { printf("Classe! %s\n", $2); }
+class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { printf("Classe!\n"); }
 ;
 
 main_class_defination: TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN { printf("Classe princiapl!\n"); }
 ;
 
-headers: headers headers
-| TK_INCLUDE { printf("Header! %s\n", $1); }
+headers: TK_INCLUDE { printf("Header!\n"); }
 ;
 
 datatype: TK_TYPE_INT 
@@ -89,8 +87,8 @@ body: TK_FOR '(' statement ';' condition ';' statement ')' '{' body '}'
 | TK_IF '(' condition ')' '{' body '}' else
 | statement ';' 
 | statement_class ';'
-| body body
 | TK_PRINTF '(' TK_STRING ')' ';'
+| body body
 | TK_SCANF '(' TK_STRING ',' '&' TK_ID ')' ';'
 ;
 
