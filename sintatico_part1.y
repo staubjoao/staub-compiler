@@ -50,10 +50,11 @@ class_body: class_atributes class_body
 |
 ;
 
-method_assinature: datatype TK_ID { printf("metodo\n"); add('F'); }; 
-
 class_method: method_assinature '(' atributs_method ')' '{' body return '}' 
 ;
+
+method_assinature: datatype TK_ID {add('F');} { printf("metodo\n"); }
+; 
 
 atributs_method: datatype TK_ID ',' atributs_method { printf("atributo1!\n"); }
 | datatype TK_ID { printf("atributo2!\n"); }
@@ -70,26 +71,26 @@ class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { printf("Classe!\n"); }
 headers: TK_INCLUDE { add('H'); }
 ;
 
-datatype: TK_TYPE_INT 
-| TK_TYPE_FLOAT 
-| TK_TYPE_CHAR
-| TK_TYPE_STRING
-| TK_VOID
+datatype: TK_TYPE_INT { insert_type(); }
+| TK_TYPE_FLOAT { insert_type(); }
+| TK_TYPE_CHAR { insert_type(); }
+| TK_TYPE_STRING { insert_type(); }
+| TK_VOID { insert_type(); }
 ;
 
-body: TK_FOR '(' statement ';' condition ';' statement ')' '{' body '}'
-| TK_IF '(' condition ')' '{' body '}' else { printf("IF\n"); }
+body: TK_FOR { add('K'); } '(' statement ';' condition ';' statement ')' '{' body '}'
+| TK_IF { add('K'); } '(' condition ')' '{' body '}' else { printf("IF\n"); }
 | statement ';' 
 | statement_class ';'
-| TK_PRINTF '(' TK_STRING ')' ';'
+| TK_PRINTF { add('K'); } '(' TK_STRING ')' ';'
 | body body
-| TK_SCANF '(' TK_STRING ',' '&' TK_ID ')' ';'
+| TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';'
 ;
 
-statement_class: TK_CLASS_NAME TK_ID '=' TK_CLASS_NAME '(' ')'
+statement_class: TK_CLASS_NAME TK_ID { add('V'); } '=' TK_CLASS_NAME '(' ')'
 ;
 
-else: TK_ELSE '{' body '}'
+else: TK_ELSE { add('K'); } '{' body '}'
 |
 ;
 
@@ -98,10 +99,10 @@ condition: value relop value
 | TK_FALSE
 ;
 
-statement_atributes: datatype TK_ID init 
+statement_atributes: datatype TK_ID { add('V'); } init 
 ;
 
-statement: datatype TK_ID 
+statement: datatype TK_ID { add('V'); }
 | datatype TK_ID init 
 | TK_ID '=' expression 
 | TK_ID relop expression
@@ -134,13 +135,13 @@ relop: TK_LT
 | TK_NE
 ;
 
-value: TK_NUMBER
-| TK_NUMBER_FLOAT
-| TK_CHARACTER
+value: TK_NUMBER { add('C'); }
+| TK_NUMBER_FLOAT { add('C'); }
+| TK_CHARACTER { add('C'); }
 | TK_ID
 ;
 
-return: TK_RETURN value ';' 
+return: TK_RETURN { add('K'); } value ';' 
 |
 ;
 
