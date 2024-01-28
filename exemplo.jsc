@@ -30,6 +30,8 @@ forma Principal {
 
         x = 35;
 
-        imprime("Teste");
+        se(x == 35) {
+            imprime("Teste");
+        }
     }
 }

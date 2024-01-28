@@ -38,16 +38,11 @@
 
 program: headers program
 | class program 
-| main_class program
 |
 ;
 
 class: class_defination '{' class_body '}' { printf("Classe\n"); }
-| headers TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN program
-;
-
-main_class: main_class_defination '{' class_body '}'
-/* | headers TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN program */
+| TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN '{' class_body '}'  { printf("Classe princiapl!\n"); }
 ;
 
 class_body: class_atributes class_body
@@ -55,7 +50,9 @@ class_body: class_atributes class_body
 |
 ;
 
-class_method: datatype TK_ID '(' atributs_method ')' '{' body return '}' { printf("Teste!!\n"); }
+method_assinature: datatype TK_ID { printf("metodo\n"); add('F'); }; 
+
+class_method: method_assinature '(' atributs_method ')' '{' body return '}' 
 ;
 
 atributs_method: datatype TK_ID ',' atributs_method { printf("atributo1!\n"); }
@@ -70,10 +67,7 @@ class_atributes: statement_atributes ';' { printf("Atributo da classe!\n"); }
 class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { printf("Classe!\n"); }
 ;
 
-main_class_defination: TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN { printf("Classe princiapl!\n"); }
-;
-
-headers: TK_INCLUDE { printf("Header!\n"); }
+headers: TK_INCLUDE { add('H'); }
 ;
 
 datatype: TK_TYPE_INT 
@@ -84,7 +78,7 @@ datatype: TK_TYPE_INT
 ;
 
 body: TK_FOR '(' statement ';' condition ';' statement ')' '{' body '}'
-| TK_IF '(' condition ')' '{' body '}' else
+| TK_IF '(' condition ')' '{' body '}' else { printf("IF\n"); }
 | statement ';' 
 | statement_class ';'
 | TK_PRINTF '(' TK_STRING ')' ';'
@@ -205,8 +199,37 @@ int search(char *type) {
     return 0;
 }
 
-int main() {
+int main(int argc, char **argv)
+{
+    if (argc != 2)
+    {
+        printf("Usage: %s <input_file>\n", argv[0]);
+        return 1;
+    }
+
+    FILE *fp = fopen(argv[1], "r");
+    if (fp == NULL)
+    {
+        printf("Error: could not open file %s\n", argv[1]);
+        return 1;
+    }
+
+    yyin = fp;
+
     yyparse();
+
+    int i = 0;
+    printf("\nSYMBOL   DATATYPE   TYPE   LINE NUMBER \n");
+    for(i=0; i<count; i++) {
+		printf("%s\t%s\t%s\t%d\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no);
+	}
+	for(i=0;i<count;i++) {
+		free(symbol_table[i].id_name);
+		free(symbol_table[i].type);
+	}
+    fclose(fp);
+
+    return 0;
 }
 
 void yyerror(const char* msg) {

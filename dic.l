@@ -27,8 +27,8 @@ unary "++"|"--"
 "forma"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION; }
 "Principal"                     { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION_MAIN; }
 ^"#include"[ ]*<.+\.h>          { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE; }
-"true"                          { strcpy(yylval.nd_obj.name,(yytext)); return TK_TRUE; }
-"false"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_FALSE; }
+"verdadeiro"                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_TRUE; }
+"falso"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_FALSE; }
 [-]?{digit}+                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_NUMBER; }
 [-]?{digit}+\.{digit}{1,6}      { strcpy(yylval.nd_obj.name,(yytext)); return TK_NUMBER_FLOAT; }
 {alphaMax}{alpha}+              { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_NAME; }
