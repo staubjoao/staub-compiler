@@ -8,6 +8,7 @@
 alphaMax [A-Z]
 alphaMin [a-z]
 alpha [a-zA-Z]
+alphanum {alpha}|{digit}
 digit [0-9]
 unary "++"|"--"
 
@@ -29,10 +30,12 @@ unary "++"|"--"
 ^"#include"[ ]*<.+\.h>          { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE; }
 "verdadeiro"                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_TRUE; }
 "falso"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_FALSE; }
+
 [-]?{digit}+                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_NUMBER; }
 [-]?{digit}+\.{digit}{1,6}      { strcpy(yylval.nd_obj.name,(yytext)); return TK_NUMBER_FLOAT; }
 {alphaMax}{alpha}+              { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_NAME; }
-{alphaMin}({alpha}|{digit})*    { strcpy(yylval.nd_obj.name,(yytext)); return TK_ID; }
+{alphaMin}{alphanum}*           { strcpy(yylval.nd_obj.name,(yytext)); printf("\nTeste: %s \n", yylval.nd_obj.name); return TK_ID; }
+
 {unary}                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_UNARY; }
 "<="                            { strcpy(yylval.nd_obj.name,(yytext)); return TK_LE; }
 ">="                            { strcpy(yylval.nd_obj.name,(yytext)); return TK_GE; }

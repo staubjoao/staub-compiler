@@ -49,23 +49,24 @@
 
 %}
 
-%union { struct var_name { 
-			char name[100]; 
-			struct node* nd;
-		} nd_obj;
+%union { 
+	struct var_name { 
+		char name[100]; 
+		struct node* nd;
+	} nd_obj;
 
-		struct var_name2 { 
-			char name[100]; 
-			struct node* nd;
-			char type[5];
-		} nd_obj2; 
+	struct var_name2 { 
+		char name[100]; 
+		struct node* nd;
+		char type[5];
+	} nd_obj2; 
 
-		struct var_name3 {
-			char name[100];
-			struct node* nd;
-			char if_body[5];
-			char else_body[5];
-		} nd_obj3;
+	struct var_name3 {
+		char name[100];
+		struct node* nd;
+		char if_body[5];
+		char else_body[5];
+	} nd_obj3;
     } 
 %token TK_VOID
 %token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_CHAR TK_RETURN TK_FOR TK_IF TK_ELSE TK_INCLUDE TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_ADD TK_SUBTRACT TK_DIVIDE TK_MULTIPLY TK_STRING TK_CHARACTER TK_CLASS_DEFINITION TK_CLASS_NAME

@@ -46,16 +46,16 @@ class: class_defination '{' class_body '}' { printf("Classe\n"); }
 ;
 
 class_body: class_atributes class_body
-| class_method class_body
+|  method_signature '(' atributs_method ')' '{' body return '}' class_body
 |
 ;
 
-class_method: datatype TK_ID {add('F');} '(' atributs_method ')' '{' body return '}'   { printf("metodo\n"); }
+method_signature: datatype TK_ID { add('F'); }
 ;
+
 
 atributs_method: datatype TK_ID ',' atributs_method { printf("atributo1!\n"); }
 | datatype TK_ID { printf("atributo n!\n"); }
-/* | atributs_method */
 |
 ;
 
@@ -96,7 +96,7 @@ condition: value relop value
 | TK_FALSE
 ;
 
-statement_atributes: datatype TK_ID init 
+statement_atributes: datatype TK_ID { add('A'); printf("\n%s\n", strdup(yytext)); } init 
 ;
 
 statement: datatype TK_ID
@@ -152,47 +152,53 @@ void add(char c) {
     q=search(yytext);
     if(!q) {
         if(c == 'H') {
-            symbol_table[count].id_name=strdup(yytext);        
+            symbol_table[count].id_name=strdup(yylval.nd_obj.name);        
             symbol_table[count].data_type=strdup(type);     
             symbol_table[count].line_no=countn;    
             symbol_table[count].type=strdup("Header");
             count++;  
         }  
         else if(c == 'K') {
-            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup("N/A");
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Keyword\t");   
             count++;  
         }  else if(c == 'V') {
-            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Variable");   
             count++;  
         }  else if(c == 'C') {
-            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup("CONST");
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Constant");   
             count++;  
         }  else if(c == 'F') {
-            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Function");   
             count++;  
         }else if(c == 'Z') {
-            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Class");   
             count++;  
         }else if(c == 'O') {
-            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Object");   
+            count++;  
+        }else if(c == 'A') {
+            symbol_table[count].id_name=strdup(yylval.nd_obj.name);
+            symbol_table[count].data_type=strdup(type);
+            symbol_table[count].line_no=countn;
+            symbol_table[count].type=strdup("Attribute");   
             count++;  
         }
     }
