@@ -5,8 +5,8 @@
     #include<ctype.h>
     #include"lex.yy.c"
     
-    void yyerror(const char *s);
     int yylex();
+    void yyerror(const char *s);
     int yywrap();
     void add(char);
     void insert_type();
@@ -18,7 +18,7 @@
         char * data_type;
         char * type;
         int line_no;
-    } symbol_table[40];
+    } symbol_table[100];
 
     int count=0;
     int q;
@@ -50,14 +50,11 @@ class_body: class_atributes class_body
 |
 ;
 
-class_method: method_assinature '(' atributs_method ')' '{' body return '}' 
+class_method: datatype TK_ID {add('F');} '(' atributs_method ')' '{' body return '}'   { printf("metodo\n"); }
 ;
 
-method_assinature: datatype TK_ID {add('F');} { printf("metodo\n"); }
-; 
-
 atributs_method: datatype TK_ID ',' atributs_method { printf("atributo1!\n"); }
-| datatype TK_ID { printf("atributo2!\n"); }
+| datatype TK_ID { printf("atributo n!\n"); }
 /* | atributs_method */
 |
 ;
@@ -65,7 +62,7 @@ atributs_method: datatype TK_ID ',' atributs_method { printf("atributo1!\n"); }
 class_atributes: statement_atributes ';' { printf("Atributo da classe!\n"); }
 ;
 
-class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { printf("Classe!\n"); }
+class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { add('Z'); } { printf("Classe!\n"); }
 ;
 
 headers: TK_INCLUDE { add('H'); }
@@ -79,7 +76,7 @@ datatype: TK_TYPE_INT { insert_type(); }
 ;
 
 body: TK_FOR { add('K'); } '(' statement ';' condition ';' statement ')' '{' body '}'
-| TK_IF { add('K'); } '(' condition ')' '{' body '}' else { printf("IF\n"); }
+| TK_IF { add('K'); } '(' condition ')' '{' body '}' else
 | statement ';' 
 | statement_class ';'
 | TK_PRINTF { add('K'); } '(' TK_STRING ')' ';'
@@ -87,7 +84,7 @@ body: TK_FOR { add('K'); } '(' statement ';' condition ';' statement ')' '{' bod
 | TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';'
 ;
 
-statement_class: TK_CLASS_NAME TK_ID { add('V'); } '=' TK_CLASS_NAME '(' ')'
+statement_class: TK_CLASS_NAME { insert_type(); } TK_ID { add('O'); } '=' TK_CLASS_NAME '(' ')'
 ;
 
 else: TK_ELSE { add('K'); } '{' body '}'
@@ -99,14 +96,14 @@ condition: value relop value
 | TK_FALSE
 ;
 
-statement_atributes: datatype TK_ID { add('V'); } init 
+statement_atributes: datatype TK_ID init 
 ;
 
-statement: datatype TK_ID { add('V'); }
+statement: datatype TK_ID
 | datatype TK_ID init 
 | TK_ID '=' expression 
 | TK_ID relop expression
-| TK_ID TK_UNARY 
+| TK_ID TK_UNARY {printf("Teste!\n");}
 | TK_UNARY TK_ID
 | TK_ID '.' TK_ID init
 ;
@@ -184,6 +181,18 @@ void add(char c) {
             symbol_table[count].data_type=strdup(type);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Function");   
+            count++;  
+        }else if(c == 'Z') {
+            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].data_type=strdup(type);
+            symbol_table[count].line_no=countn;
+            symbol_table[count].type=strdup("Class");   
+            count++;  
+        }else if(c == 'O') {
+            symbol_table[count].id_name=strdup(yytext);
+            symbol_table[count].data_type=strdup(type);
+            symbol_table[count].line_no=countn;
+            symbol_table[count].type=strdup("Object");   
             count++;  
         }
     }

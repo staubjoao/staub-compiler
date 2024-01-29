@@ -30,6 +30,10 @@ forma Principal {
 
         x = 35;
 
+        enquanto(inteiro i = 0; i < 10; i++) {
+            imprime("teste");
+        }
+
         se(x == 35) {
             imprime("Teste");
         }
