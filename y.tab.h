@@ -137,13 +137,16 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 29 "sintatico_part1.y"
- struct var_name { 
-			char name[100]; 
-			struct node* nd;
-		} nd_obj;
+#line 52 "sintatico_part1.y"
+     
 
-#line 147 "y.tab.h"
+struct var_name { 
+	char name[100]; 
+	struct node* nd;
+} nd_obj;
+
+
+#line 150 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

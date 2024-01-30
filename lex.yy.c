@@ -960,7 +960,7 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 37 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); printf("\nTeste: %s \n", yylval.nd_obj.name); return TK_ID; }
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_ID; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP

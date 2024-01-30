@@ -34,7 +34,7 @@ unary "++"|"--"
 [-]?{digit}+                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_NUMBER; }
 [-]?{digit}+\.{digit}{1,6}      { strcpy(yylval.nd_obj.name,(yytext)); return TK_NUMBER_FLOAT; }
 {alphaMax}{alpha}+              { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_NAME; }
-{alphaMin}{alphanum}*           { strcpy(yylval.nd_obj.name,(yytext)); printf("\nTeste: %s \n", yylval.nd_obj.name); return TK_ID; }
+{alphaMin}{alphanum}*           { strcpy(yylval.nd_obj.name,(yytext)); return TK_ID; }
 
 {unary}                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_UNARY; }
 "<="                            { strcpy(yylval.nd_obj.name,(yytext)); return TK_LE; }
