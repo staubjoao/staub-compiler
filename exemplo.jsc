@@ -30,6 +30,8 @@ forma Principal {
 
         x = 35;
 
+        inteiro[] x;
+
         enquanto(inteiro i = 0; i < 10; i++) {
             imprime("teste");
         }

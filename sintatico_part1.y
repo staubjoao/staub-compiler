@@ -108,6 +108,7 @@ body: TK_FOR { add('K'); } '(' statement ';' condition ';' statement ')' '{' bod
 | TK_PRINTF { add('K'); } '(' TK_STRING ')' ';'
 | body body
 | TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';'
+| datatype '[' ']' TK_ID { add('X'); } ';'
 ;
 
 statement_class: TK_CLASS_NAME { insert_type(); } TK_ID { add('O'); } '=' TK_CLASS_NAME '(' ')'
@@ -245,7 +246,14 @@ void add(char c) {
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Attribute");   
             count++;  
+        }else if(c == 'X') {
+            symbol_table[count].id_name=strdup(yylval.nd_obj.name);
+            symbol_table[count].data_type=strdup(type);
+            symbol_table[count].line_no=countn;
+            symbol_table[count].type=strdup("Vector");   
+            count++;  
         }
+
     }
 }
 
