@@ -101,8 +101,8 @@ datatype: TK_TYPE_INT { insert_type(); }
 | TK_VOID { insert_type(); }
 ;
 
-body: TK_FOR { add('K'); } '(' statement ';' condition ';' statement ')' '{' body '}'
-| TK_IF { add('K'); } '(' condition ')' '{' body '}' else
+body: TK_FOR { add('K'); } '(' statement ';' condition ';' statement ')' '{' body_tail '}'
+| TK_IF { add('K'); } '(' condition ')' '{' body_tail '}' else
 | statement ';' 
 | statement_class ';'
 | TK_PRINTF { add('K'); } '(' TK_STRING ')' ';'
@@ -111,10 +111,18 @@ body: TK_FOR { add('K'); } '(' statement ';' condition ';' statement ')' '{' bod
 | datatype '[' ']' TK_ID { add('X'); } ';'
 ;
 
+body_tail: statement ';' body_tail
+| statement_class ';' body_tail
+| TK_PRINTF { add('K'); } '(' TK_STRING ')' ';' body_tail
+| TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';' body_tail
+| datatype '[' ']' TK_ID { add('X'); } ';' body_tail
+|
+;
+
 statement_class: TK_CLASS_NAME { insert_type(); } TK_ID { add('O'); } '=' TK_CLASS_NAME '(' ')'
 ;
 
-else: TK_ELSE { add('K'); } '{' body '}'
+else: TK_ELSE { add('K'); } '{' body_tail '}'
 |
 ;
 
