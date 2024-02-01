@@ -27,7 +27,8 @@ unary "++"|"--"
 "senao"	                        { strcpy(yylval.nd_obj.name,(yytext)); return TK_ELSE; }
 "forma"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION; }
 "Principal"                     { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION_MAIN; }
-^"#include"[ ]*<.+\.h>          { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE; }
+"importa"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE; }
+{alphaMin}*\.jsc                { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE_CLASS; }
 "verdadeiro"                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_TRUE; }
 "falso"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_FALSE; }
 

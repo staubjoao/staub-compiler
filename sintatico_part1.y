@@ -58,7 +58,7 @@ struct var_name {
 
 }
 %token TK_VOID
-%token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_ADD TK_SUBTRACT TK_DIVIDE TK_MULTIPLY TK_STRING TK_CHARACTER
+%token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_INCLUDE_CLASS TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_ADD TK_SUBTRACT TK_DIVIDE TK_MULTIPLY TK_STRING TK_CHARACTER
 %type <nd_obj> body statement_class statement datatype 
 %%
 
@@ -91,7 +91,7 @@ class_atributes: statement_atributes ';'
 class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { add('Z'); } 
 ;
 
-headers: TK_INCLUDE { add('H'); }
+headers: TK_INCLUDE { add('H'); } TK_INCLUDE_CLASS ';'
 ;
 
 datatype: TK_TYPE_INT { insert_type(); }
@@ -270,33 +270,29 @@ int search(char *type) {
 
 int main(int argc, char **argv)
 {
-    if (argc != 2)
-    {
-        printf("Usage: %s <input_file>\n", argv[0]);
-        return 1;
+    int i;
+    for (i = 1; i < argc; i++) {
+        FILE *fp = fopen(argv[i], "r");
+        if (fp == NULL) {
+            printf("Error: could not open file %s\n", argv[i]);
+            return 1;
+        }
+
+        yyin = fp;
+
+        yyparse();
+
+        fclose(fp);
     }
-
-    FILE *fp = fopen(argv[1], "r");
-    if (fp == NULL)
-    {
-        printf("Error: could not open file %s\n", argv[1]);
-        return 1;
-    }
-
-    yyin = fp;
-
-    yyparse();
-
-    int i = 0;
     printf("\nSYMBOL   DATATYPE   TYPE   LINE NUMBER \n");
-    for(i=0; i<count; i++) {
-		printf("%s\t%s\t%s\t%d\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no);
-	}
-	for(i=0;i<count;i++) {
-		free(symbol_table[i].id_name);
-		free(symbol_table[i].type);
-	}
-    fclose(fp);
+    for (i = 0; i < count; i++) {
+        printf("%s\t%s\t%s\t%d\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no);
+    }
+
+    for (i = 0; i < count; i++) {
+        free(symbol_table[i].id_name);
+        free(symbol_table[i].type);
+    }
 
     return 0;
 }

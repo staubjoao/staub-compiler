@@ -1,24 +1,4 @@
-#include <stdio.h>
-#include <stdio.h>
-
-forma Circulo {
-
-    palavra cor;
-    decimal raio;
-    decimal pi = 3.14;
-
-    decimal calculaArea(inteiro teste, decimal teste2) {
-        decimal area;
-        area = pi * (raio * raio);
-        return area;
-    }
-
-    decimal calcularCircuferencia() {
-        decimal circuferencia = 2 * raio * pi;
-        imprime("teste");
-        return circuferencia;
-    }
-}
+importa circulo.jsc;
 
 forma Principal {
     vazio principal() {
