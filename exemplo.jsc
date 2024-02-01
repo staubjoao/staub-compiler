@@ -1,8 +1,11 @@
 importa circulo.jsc;
+importa circulo.jsc;
 
 forma Principal {
     vazio principal() {
         inteiro x;
+
+        x = (1 + 1) * (6 * (8 / 1) + 4) * (1 + (1 + (1 + 1)));
 
         Circulo circulo = Circulo();
 
@@ -10,10 +13,10 @@ forma Principal {
 
         x = 35;
 
-        inteiro[] x;
-
-        enquanto(inteiro i = 0; i < 10; i++) {
+        inteiro i = 0;
+        enquanto(i < 10) {
             imprime("teste");
+            i++;
         }
 
         se(x == 35) {

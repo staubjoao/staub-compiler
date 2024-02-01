@@ -15,7 +15,7 @@ run: 	glf
 		compile
 		translate
 
-debug:	PARSER_PARAMS += -Wcounterexamples
+debug:	PARSER_PARAMS += -Wcounterexamples -Wconflicts-sr -Wconflicts-rr -Wcex
 debug: 	all
 
 translate: glf

@@ -84,12 +84,12 @@ extern int yydebug;
     TK_LT = 285,                   /* TK_LT  */
     TK_AND = 286,                  /* TK_AND  */
     TK_OR = 287,                   /* TK_OR  */
-    TK_ADD = 288,                  /* TK_ADD  */
-    TK_SUBTRACT = 289,             /* TK_SUBTRACT  */
-    TK_DIVIDE = 290,               /* TK_DIVIDE  */
-    TK_MULTIPLY = 291,             /* TK_MULTIPLY  */
-    TK_STRING = 292,               /* TK_STRING  */
-    TK_CHARACTER = 293             /* TK_CHARACTER  */
+    TK_STRING = 288,               /* TK_STRING  */
+    TK_CHARACTER = 289,            /* TK_CHARACTER  */
+    TK_MULTIPLY = 290,             /* TK_MULTIPLY  */
+    TK_DIVIDE = 291,               /* TK_DIVIDE  */
+    TK_ADD = 292,                  /* TK_ADD  */
+    TK_SUBTRACT = 293              /* TK_SUBTRACT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -128,19 +128,19 @@ extern int yydebug;
 #define TK_LT 285
 #define TK_AND 286
 #define TK_OR 287
-#define TK_ADD 288
-#define TK_SUBTRACT 289
-#define TK_DIVIDE 290
-#define TK_MULTIPLY 291
-#define TK_STRING 292
-#define TK_CHARACTER 293
+#define TK_STRING 288
+#define TK_CHARACTER 289
+#define TK_MULTIPLY 290
+#define TK_DIVIDE 291
+#define TK_ADD 292
+#define TK_SUBTRACT 293
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
 #line 52 "sintatico_part1.y"
-     
+
 
 struct var_name { 
 	char name[100]; 

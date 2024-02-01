@@ -49,7 +49,7 @@
 	};
 %}
 
-%union {     
+%union {
 
 struct var_name { 
 	char name[100]; 
@@ -58,13 +58,18 @@ struct var_name {
 
 }
 %token TK_VOID
-%token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_INCLUDE_CLASS TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_ADD TK_SUBTRACT TK_DIVIDE TK_MULTIPLY TK_STRING TK_CHARACTER
-%type <nd_obj> body statement_class statement datatype 
+%token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_INCLUDE_CLASS TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_STRING TK_CHARACTER
+%type <nd_obj> statement_class statement datatype body_statement
+%left TK_MULTIPLY TK_DIVIDE
+%left TK_ADD TK_SUBTRACT
 %%
 
-program: headers  program
+program: headers program
 | class program 
 |
+;
+
+headers: TK_INCLUDE { add('H'); } TK_INCLUDE_CLASS ';'
 ;
 
 class: class_defination '{' class_body '}'
@@ -91,9 +96,6 @@ class_atributes: statement_atributes ';'
 class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { add('Z'); } 
 ;
 
-headers: TK_INCLUDE { add('H'); } TK_INCLUDE_CLASS ';'
-;
-
 datatype: TK_TYPE_INT { insert_type(); }
 | TK_TYPE_FLOAT { insert_type(); }
 | TK_TYPE_CHAR { insert_type(); }
@@ -101,29 +103,23 @@ datatype: TK_TYPE_INT { insert_type(); }
 | TK_VOID { insert_type(); }
 ;
 
-body: TK_FOR { add('K'); } '(' statement ';' condition ';' statement ')' '{' body_tail '}'
-| TK_IF { add('K'); } '(' condition ')' '{' body_tail '}' else
-| statement ';' 
-| statement_class ';'
-| TK_PRINTF { add('K'); } '(' TK_STRING ')' ';'
-| body body
-| TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';'
-| datatype '[' ']' TK_ID { add('X'); } ';'
+body: body_statement body
+|
 ;
 
-body_tail: statement ';' body_tail
-| statement_class ';' body_tail
-| TK_PRINTF { add('K'); } '(' TK_STRING ')' ';' body_tail
-| TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';' body_tail
-| datatype '[' ']' TK_ID { add('X'); } ';' body_tail
+body_statement: TK_PRINTF { add('K'); } '(' TK_STRING ')' ';'
+| TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';'
+| statement_class ';'
+| statement ';' 
+| TK_IF { add('K'); } '(' condition ')' '{' body '}' else
+| TK_FOR { add('K'); } '(' condition ')' '{' body '}'
+;
+
+else: TK_ELSE { add('K'); } '{' body '}'
 |
 ;
 
 statement_class: TK_CLASS_NAME { insert_type(); } TK_ID { add('O'); } '=' TK_CLASS_NAME '(' ')'
-;
-
-else: TK_ELSE { add('K'); } '{' body_tail '}'
-|
 ;
 
 condition: value relop value 
@@ -132,10 +128,11 @@ condition: value relop value
 ;
 
 statement_atributes: datatype TK_ID { add('A'); } init 
+| datatype TK_ID { add('A'); }
 ;
 
-statement: datatype TK_ID
-| datatype TK_ID init 
+statement: datatype TK_ID init  
+| datatype TK_ID
 | TK_ID '=' expression 
 | TK_ID relop expression
 | TK_ID TK_UNARY
@@ -143,20 +140,15 @@ statement: datatype TK_ID
 | TK_ID '.' TK_ID init
 ;
 
-init: '=' value 
-| '=' expression
-|
+init: '=' expression
 ;
 
-expression: expression arithmetic expression
+expression: expression TK_MULTIPLY expression 
+| expression TK_DIVIDE expression 
+| expression TK_SUBTRACT expression 
+| expression TK_ADD expression 
 | '(' expression ')'
 | value
-;
-
-arithmetic: TK_ADD 
-| TK_SUBTRACT 
-| TK_MULTIPLY
-| TK_DIVIDE
 ;
 
 relop: TK_LT
