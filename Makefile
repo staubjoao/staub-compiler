@@ -15,11 +15,11 @@ run: 	glf
 		compile
 		translate
 
-debug:	PARSER_PARAMS += -Wcounterexamples -Wconflicts-sr -Wconflicts-rr -Wcex
+debug:	PARSER_PARAMS += -Wcounterexamples -Wconflicts-sr -Wconflicts-rr -Wcex -Wother
 debug: 	all
 
 translate: glf
-		./glf exemplo.jsc circulo.jsc
+		./glf exemplo.jsc
 
 clear:
 	rm y.tab.c

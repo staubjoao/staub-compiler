@@ -1,5 +1,5 @@
 importa circulo.jsc;
-importa circulo.jsc;
+importa circuloa.jsc;
 
 forma Principal {
     vazio principal() {

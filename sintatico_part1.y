@@ -10,6 +10,8 @@
     int yywrap();
     void add(char);
     void insert_type();
+    void printtree(struct node*);
+    void printInorder(struct node *);
     int search(char *);
 	void insert_type();
 	void print_tree(struct node*);
@@ -18,7 +20,7 @@
 	void check_return_type(char *);
 	int check_types(char *, char *);
 	char *get_type(char *);
-	struct node* mknode(struct node *left, struct node *right, char *token);
+	struct node* mknode(struct node *left, struct node *right, const char *token);
 
 	struct dataType {
         char * id_name;
@@ -26,6 +28,12 @@
         char * type;
         int line_no;
 	} symbol_table[40];
+
+    struct node { 
+		struct node *left; 
+		struct node *right; 
+		char *token; 
+	};
 
     int count=0;
     int q;
@@ -42,11 +50,6 @@
     char reserved[12][10] = {"inteiro", "decimal", "caracter", "palavra", "vazio", "se", "senao", "enquanto", "principal", "retorne", "include", "forma"};
 	char icg[50][100];
 
-    struct node { 
-		struct node *left; 
-		struct node *right; 
-		char *token; 
-	};
 %}
 
 %union {
@@ -58,25 +61,27 @@ struct var_name {
 
 }
 %token TK_VOID
-%token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_INCLUDE_CLASS TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_STRING TK_CHARACTER
-%type <nd_obj> statement_class statement datatype body_statement
+%token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_STRING TK_CHARACTER
+%type <nd_obj> headers program class_defination class_defination_main class_atributes class_body class method_signature statement_atributes datatype
 %left TK_MULTIPLY TK_DIVIDE
 %left TK_ADD TK_SUBTRACT
 %%
 
-program: headers program
-| class program 
-|
+program: headers class_defination_main '{' class_body '}' { $2.nd = mknode($4.nd, NULL, "main"); $$.nd = mknode($1.nd, $2.nd, "program"); head = $$.nd; } 
+| class
 ;
 
-headers: TK_INCLUDE { add('H'); } TK_INCLUDE_CLASS ';'
+headers: headers headers { $$.nd = mknode($1.nd, $2.nd, "headers"); }
+| TK_INCLUDE { add('H'); } ';' { $$.nd = mknode(NULL, NULL, $1.name); }
 ;
 
 class: class_defination '{' class_body '}'
-| TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN '{' class_body '}'
 ;
 
-class_body: class_atributes class_body
+class_defination_main: TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN { add('Z'); }
+;
+
+class_body: class_atributes class_body { $$.nd = $1.nd; }
 |  method_signature '(' atributs_method ')' '{' body return '}' class_body
 |
 ;
@@ -171,7 +176,42 @@ return: TK_RETURN { add('K'); } value ';'
 
 %%
 
-struct node* mknode(struct node *left, struct node *right, char *token) {
+int main(int argc, char **argv)
+{
+    int i;
+    for (i = 1; i < argc; i++) {
+        FILE *fp = fopen(argv[i], "r");
+        if (fp == NULL) {
+            printf("Error: could not open file %s\n", argv[i]);
+            return 1;
+        }
+
+        yyin = fp;
+
+        yyparse();
+
+        fclose(fp);
+    }
+    printf("\nSYMBOL   DATATYPE   TYPE   LINE NUMBER \n");
+    for (i = 0; i < count; i++) {
+        printf("%s\t%s\t%s\t%d\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no);
+    }
+
+    for (i = 0; i < count; i++) {
+        free(symbol_table[i].id_name);
+        free(symbol_table[i].type);
+    }
+
+    printf("\n\n");
+	printf("\t\t\t\t\t\t PHASE 2: SYNTAX ANALYSIS \n\n");
+	printtree(head);
+    printf("\n\n");
+
+    return 0;
+}
+
+
+struct node* mknode(struct node *left, struct node *right, const char *token) {
     struct node *newnode = (struct node*) malloc(sizeof(struct node));
     char *newstr = (char*) malloc(strlen(token)+1);
     strcpy(newstr, token);
@@ -179,6 +219,23 @@ struct node* mknode(struct node *left, struct node *right, char *token) {
     newnode->right = right;
     newnode->token = newstr;
     return(newnode);
+}
+
+void printtree(struct node* tree) {
+	printf("\n\n Inorder traversal of the Parse Tree: \n\n");
+	printInorder(tree);
+	printf("\n\n");
+}
+
+void printInorder(struct node *tree) {
+	int i;
+	if (tree->left) {
+		printInorder(tree->left);
+	}
+	printf("%s, ", tree->token);
+	if (tree->right) {
+		printInorder(tree->right);
+	}
 }
 
 void insert_type() {
@@ -265,35 +322,6 @@ int search(char *type) {
             break;  
         }
     } 
-    return 0;
-}
-
-int main(int argc, char **argv)
-{
-    int i;
-    for (i = 1; i < argc; i++) {
-        FILE *fp = fopen(argv[i], "r");
-        if (fp == NULL) {
-            printf("Error: could not open file %s\n", argv[i]);
-            return 1;
-        }
-
-        yyin = fp;
-
-        yyparse();
-
-        fclose(fp);
-    }
-    printf("\nSYMBOL   DATATYPE   TYPE   LINE NUMBER \n");
-    for (i = 0; i < count; i++) {
-        printf("%s\t%s\t%s\t%d\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no);
-    }
-
-    for (i = 0; i < count; i++) {
-        free(symbol_table[i].id_name);
-        free(symbol_table[i].type);
-    }
-
     return 0;
 }
 

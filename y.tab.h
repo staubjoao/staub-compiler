@@ -68,28 +68,27 @@ extern int yydebug;
     TK_CLASS_DEFINITION = 269,     /* TK_CLASS_DEFINITION  */
     TK_CLASS_DEFINITION_MAIN = 270, /* TK_CLASS_DEFINITION_MAIN  */
     TK_INCLUDE = 271,              /* TK_INCLUDE  */
-    TK_INCLUDE_CLASS = 272,        /* TK_INCLUDE_CLASS  */
-    TK_TRUE = 273,                 /* TK_TRUE  */
-    TK_FALSE = 274,                /* TK_FALSE  */
-    TK_NUMBER = 275,               /* TK_NUMBER  */
-    TK_NUMBER_FLOAT = 276,         /* TK_NUMBER_FLOAT  */
-    TK_ID = 277,                   /* TK_ID  */
-    TK_CLASS_NAME = 278,           /* TK_CLASS_NAME  */
-    TK_UNARY = 279,                /* TK_UNARY  */
-    TK_LE = 280,                   /* TK_LE  */
-    TK_GE = 281,                   /* TK_GE  */
-    TK_EQ = 282,                   /* TK_EQ  */
-    TK_NE = 283,                   /* TK_NE  */
-    TK_GT = 284,                   /* TK_GT  */
-    TK_LT = 285,                   /* TK_LT  */
-    TK_AND = 286,                  /* TK_AND  */
-    TK_OR = 287,                   /* TK_OR  */
-    TK_STRING = 288,               /* TK_STRING  */
-    TK_CHARACTER = 289,            /* TK_CHARACTER  */
-    TK_MULTIPLY = 290,             /* TK_MULTIPLY  */
-    TK_DIVIDE = 291,               /* TK_DIVIDE  */
-    TK_ADD = 292,                  /* TK_ADD  */
-    TK_SUBTRACT = 293              /* TK_SUBTRACT  */
+    TK_TRUE = 272,                 /* TK_TRUE  */
+    TK_FALSE = 273,                /* TK_FALSE  */
+    TK_NUMBER = 274,               /* TK_NUMBER  */
+    TK_NUMBER_FLOAT = 275,         /* TK_NUMBER_FLOAT  */
+    TK_ID = 276,                   /* TK_ID  */
+    TK_CLASS_NAME = 277,           /* TK_CLASS_NAME  */
+    TK_UNARY = 278,                /* TK_UNARY  */
+    TK_LE = 279,                   /* TK_LE  */
+    TK_GE = 280,                   /* TK_GE  */
+    TK_EQ = 281,                   /* TK_EQ  */
+    TK_NE = 282,                   /* TK_NE  */
+    TK_GT = 283,                   /* TK_GT  */
+    TK_LT = 284,                   /* TK_LT  */
+    TK_AND = 285,                  /* TK_AND  */
+    TK_OR = 286,                   /* TK_OR  */
+    TK_STRING = 287,               /* TK_STRING  */
+    TK_CHARACTER = 288,            /* TK_CHARACTER  */
+    TK_MULTIPLY = 289,             /* TK_MULTIPLY  */
+    TK_DIVIDE = 290,               /* TK_DIVIDE  */
+    TK_ADD = 291,                  /* TK_ADD  */
+    TK_SUBTRACT = 292              /* TK_SUBTRACT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -112,34 +111,33 @@ extern int yydebug;
 #define TK_CLASS_DEFINITION 269
 #define TK_CLASS_DEFINITION_MAIN 270
 #define TK_INCLUDE 271
-#define TK_INCLUDE_CLASS 272
-#define TK_TRUE 273
-#define TK_FALSE 274
-#define TK_NUMBER 275
-#define TK_NUMBER_FLOAT 276
-#define TK_ID 277
-#define TK_CLASS_NAME 278
-#define TK_UNARY 279
-#define TK_LE 280
-#define TK_GE 281
-#define TK_EQ 282
-#define TK_NE 283
-#define TK_GT 284
-#define TK_LT 285
-#define TK_AND 286
-#define TK_OR 287
-#define TK_STRING 288
-#define TK_CHARACTER 289
-#define TK_MULTIPLY 290
-#define TK_DIVIDE 291
-#define TK_ADD 292
-#define TK_SUBTRACT 293
+#define TK_TRUE 272
+#define TK_FALSE 273
+#define TK_NUMBER 274
+#define TK_NUMBER_FLOAT 275
+#define TK_ID 276
+#define TK_CLASS_NAME 277
+#define TK_UNARY 278
+#define TK_LE 279
+#define TK_GE 280
+#define TK_EQ 281
+#define TK_NE 282
+#define TK_GT 283
+#define TK_LT 284
+#define TK_AND 285
+#define TK_OR 286
+#define TK_STRING 287
+#define TK_CHARACTER 288
+#define TK_MULTIPLY 289
+#define TK_DIVIDE 290
+#define TK_ADD 291
+#define TK_SUBTRACT 292
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 52 "sintatico_part1.y"
+#line 55 "sintatico_part1.y"
 
 
 struct var_name { 
@@ -148,7 +146,7 @@ struct var_name {
 } nd_obj;
 
 
-#line 152 "y.tab.h"
+#line 150 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
