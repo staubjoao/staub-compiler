@@ -169,8 +169,8 @@ statement_atributes: datatype TK_ID { add('A'); } init
 | datatype TK_ID { add('A'); }
 ;
 
-statement: datatype TK_ID init  
-| datatype TK_ID
+statement: datatype TK_ID { add('V'); } init  
+| datatype TK_ID { add('V'); }
 | TK_ID '=' expression 
 | TK_ID relop expression
 | TK_ID TK_UNARY

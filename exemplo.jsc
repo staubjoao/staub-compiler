@@ -20,6 +20,7 @@ forma Principal {
         }
 
         se(x == 35) {
+            inteiro y;
             imprime("Teste");
             imprime("Teste");
             imprime("Teste");
