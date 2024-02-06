@@ -16,10 +16,10 @@
 	void insert_type();
 	void print_tree(struct node*);
 	void print_inorder(struct node *);
-    void check_declaration(char *);
-	void check_return_type(char *);
-	int check_types(char *, char *);
-	char *get_type(char *);
+    void check_declaration(const char *);
+	void check_return_type(const char *);
+	int check_types(const char *, const char *);
+	char *get_type(const char *);
 	struct node* mknode(struct node *left, struct node *right, const char *token);
 
 	struct dataType {
@@ -59,15 +59,27 @@ struct var_name {
 	struct node* nd;
 } nd_obj;
 
+struct var_name2 { 
+	char name[100]; 
+	struct node* nd;
+	char type[5];
+} nd_obj2; 
+
 }
 %token TK_VOID
 %token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_STRING TK_CHARACTER
-%type <nd_obj> headers program class_defination class_defination_main class_atributes class_body class method_signature statement_atributes datatype
+%type <nd_obj> headers program class_defination class_defination_main class_atributes class_body class method_signature statement_atributes 
+%type <nd_obj> datatype else body body_statement statement_class statement condition return
+%type <nd_obj2> init value expression
 %left TK_MULTIPLY TK_DIVIDE
 %left TK_ADD TK_SUBTRACT
 %%
 
-program: headers class_defination_main '{' class_body '}' { $2.nd = mknode($4.nd, NULL, "main"); $$.nd = mknode($1.nd, $2.nd, "program"); head = $$.nd; } 
+program: headers class_defination_main '{' class_body '}' { 
+    $2.nd = mknode($4.nd, NULL, "main_class"); 
+    $$.nd = mknode($1.nd, $2.nd, "program"); 
+    head = $$.nd; 
+} 
 | class
 ;
 
@@ -75,15 +87,23 @@ headers: headers headers { $$.nd = mknode($1.nd, $2.nd, "headers"); }
 | TK_INCLUDE { add('H'); } ';' { $$.nd = mknode(NULL, NULL, $1.name); }
 ;
 
-class: class_defination '{' class_body '}'
+class: class_defination '{' class_body '}' {
+    $$.nd = mknode($1.nd, $3.nd, "class");
+}
 ;
 
 class_defination_main: TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN { add('Z'); }
 ;
 
-class_body: class_atributes class_body { $$.nd = $1.nd; }
-|  method_signature '(' atributs_method ')' '{' body return '}' class_body
-|
+class_body: class_atributes class_body { 
+    $$.nd = mknode($1.nd, $2.nd, "class_body"); 
+}
+|  method_signature '(' atributs_method ')' '{' body return '}' class_body {
+    $$.nd = mknode($6.nd, $7.nd, "method");
+}
+| { 
+    $$.nd = NULL;
+}
 ;
 
 method_signature: datatype TK_ID { add('F'); }
@@ -98,7 +118,7 @@ atributs_method: datatype TK_ID ',' atributs_method
 class_atributes: statement_atributes ';' 
 ;
 
-class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { add('Z'); } 
+class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { add('Z'); } { $$.nd = mknode($1.nd, $2.nd, "class"); }
 ;
 
 datatype: TK_TYPE_INT { insert_type(); }
@@ -108,20 +128,33 @@ datatype: TK_TYPE_INT { insert_type(); }
 | TK_VOID { insert_type(); }
 ;
 
-body: body_statement body
+body: body_statement body { $$.nd = mknode($1.nd, $2.nd, "statement_body"); }
 |
 ;
 
-body_statement: TK_PRINTF { add('K'); } '(' TK_STRING ')' ';'
-| TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';'
-| statement_class ';'
-| statement ';' 
-| TK_IF { add('K'); } '(' condition ')' '{' body '}' else
-| TK_FOR { add('K'); } '(' condition ')' '{' body '}'
+body_statement: TK_PRINTF { add('K'); } '(' TK_STRING ')' ';' {
+    $$.nd = mknode(NULL, NULL, "print");
+}
+| TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';' {
+
+}
+| statement_class ';' {
+
+}
+| statement ';' {
+
+}
+| TK_IF { add('K'); } '(' condition ')' '{' body '}' else {
+    struct node *iff = mknode($4.nd, $7.nd, $1.name);
+    $$.nd = mknode(iff, $9.nd, "if-else");
+}
+| TK_FOR { add('K'); } '(' condition ')' '{' body '}' {
+
+}
 ;
 
 else: TK_ELSE { add('K'); } '{' body '}'
-|
+| { $$.nd = NULL; }
 ;
 
 statement_class: TK_CLASS_NAME { insert_type(); } TK_ID { add('O'); } '=' TK_CLASS_NAME '(' ')'
@@ -170,8 +203,13 @@ value: TK_NUMBER { add('C'); }
 | TK_ID
 ;
 
-return: TK_RETURN { add('K'); } value ';' 
-|
+return: TK_RETURN { add('K'); } value ';' { 
+    check_return_type($3.name); $1.nd = mknode(NULL, NULL, "return"); 
+    $$.nd = mknode($1.nd, $3.nd, "RETURN"); 
+}
+| { 
+    $$.nd = NULL; 
+}
 ;
 
 %%
@@ -212,6 +250,7 @@ int main(int argc, char **argv)
 
 
 struct node* mknode(struct node *left, struct node *right, const char *token) {
+    printf("%s\n", token);
     struct node *newnode = (struct node*) malloc(sizeof(struct node));
     char *newstr = (char*) malloc(strlen(token)+1);
     strcpy(newstr, token);
@@ -240,6 +279,51 @@ void printInorder(struct node *tree) {
 
 void insert_type() {
     strcpy(type, yytext);
+}
+
+void check_return_type(const char *value) {
+	char *main_datatype = get_type("main");
+	char *return_datatype = get_type(value);
+	if((!strcmp(main_datatype, "int") && !strcmp(return_datatype, "CONST")) || !strcmp(main_datatype, return_datatype)){
+		return ;
+	}
+	else {
+		sprintf(errors[sem_errors], "Line %d: Return type mismatch\n", countn+1);
+		sem_errors++;
+	}
+}
+
+int check_types(const char *type1, const char *type2){
+	// declaration with no init
+	if(!strcmp(type2, "null"))
+		return -1;
+	// both datatypes are same
+	if(!strcmp(type1, type2))
+		return 0;
+	// both datatypes are different
+	if(!strcmp(type1, "int") && !strcmp(type2, "float"))
+		return 1;
+	if(!strcmp(type1, "float") && !strcmp(type2, "int"))
+		return 2;
+	if(!strcmp(type1, "int") && !strcmp(type2, "char"))
+		return 3;
+	if(!strcmp(type1, "char") && !strcmp(type2, "int"))
+		return 4;
+	if(!strcmp(type1, "float") && !strcmp(type2, "char"))
+		return 5;
+	if(!strcmp(type1, "char") && !strcmp(type2, "float"))
+		return 6;
+    return -1;
+}
+
+char *get_type(const char *var){
+	for(int i=0; i<count; i++) {
+		// Handle case of use before declaration
+		if(!strcmp(symbol_table[i].id_name, var)) {
+			return symbol_table[i].data_type;
+		}
+	}
+    return NULL;
 }
 
 void add(char c) {

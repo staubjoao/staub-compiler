@@ -145,8 +145,14 @@ struct var_name {
 	struct node* nd;
 } nd_obj;
 
+struct var_name2 { 
+	char name[100]; 
+	struct node* nd;
+	char type[5];
+} nd_obj2; 
 
-#line 150 "y.tab.h"
+
+#line 156 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

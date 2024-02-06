@@ -21,6 +21,8 @@ forma Principal {
 
         se(x == 35) {
             imprime("Teste");
+            imprime("Teste");
+            imprime("Teste");
         }
 
         // teste
