@@ -1,0 +1,14 @@
+forma Quadrado {
+
+    palavra cor;
+    inteiro lado;
+
+    inteiro calculaArea() {
+        retorno lado * lado;
+    }
+
+    decimal calcularPerimetro() {
+        perimetro
+        retorno circuferencia;
+    }
+}

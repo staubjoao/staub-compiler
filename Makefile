@@ -1,7 +1,7 @@
 SCANNER := lex
 SCANNER_PARAMS := dic.l
 PARSER := yacc
-PARSER_PARAMS := -d sintatico_part1.y
+PARSER_PARAMS := -d sintatico.y
 
 all: compile translate
 
@@ -19,7 +19,7 @@ debug:	PARSER_PARAMS += -Wcounterexamples -Wconflicts-sr -Wconflicts-rr -Wcex -W
 debug: 	all
 
 translate: glf
-		./glf exemplo.jsc
+		./glf exemplo.jsc circulo.jsc
 
 clear:
 	rm y.tab.c
