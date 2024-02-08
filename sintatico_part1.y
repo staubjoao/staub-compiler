@@ -80,7 +80,9 @@ program: headers class_defination_main '{' class_body '}' {
     $$.nd = mknode($1.nd, $2.nd, "program"); 
     head = $$.nd; 
 } 
-| class
+| class {
+    
+}
 ;
 
 headers: headers headers { $$.nd = mknode($1.nd, $2.nd, "headers"); }

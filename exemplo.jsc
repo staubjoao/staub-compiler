@@ -5,8 +5,6 @@ Principal {
     inteiro principal() {
         inteiro x;
 
-        x = (1 + 1) * (6 * (8 / 1) + 4) * (1 + (1 + (1 + 1)));
-
         Circulo circulo = Circulo();
 
         circulo.raio = 5.1;

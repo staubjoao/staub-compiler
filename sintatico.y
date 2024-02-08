@@ -226,12 +226,6 @@ expression: expression TK_MULTIPLY expression {
 | expression TK_ADD expression {
     $$.nd = mknode($1.nd, $3.nd, $2.name); 
 }
-| '(' expression ')' {
-    struct node *aux = mknode(NULL, NULL, "(");
-    struct node *aux2 = mknode(NULL, NULL, ")");
-    struct node *aux3 = mknode(aux, $2.nd, "");
-    $$.nd = mknode (aux3, aux2, "");
-}
 | value { $$.nd = $1.nd; }
 ;
 
