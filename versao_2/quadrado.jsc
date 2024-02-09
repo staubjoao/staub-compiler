@@ -1,0 +1,16 @@
+forma Quadrado {
+
+    palavra cor;
+    inteiro lado;
+
+    inteiro calculaArea() {
+        inteiro ladoQuadrado = lado * lado;
+        retorno ladoQuadrado;
+    }
+
+    inteiro calcularPerimetro() {
+        inteiro perimetro = lado * 4;
+        retorno perimetro;
+    }
+
+}
