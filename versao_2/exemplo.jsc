@@ -3,11 +3,6 @@ importa quadrado.jsc;
 
 Principal {
     inteiro principal() {
-        inteiro x;
-
-        Circulo circulo = Circulo();
-
-        circulo.raio = 5.1;
 
         leia("%d", &x);
 
@@ -28,6 +23,9 @@ Principal {
         }
 
         // teste
+        // Circulo circulo = Circulo();
+
+        // circulo.raio = 5.1;
         retorno x;
     }
 }

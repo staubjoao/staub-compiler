@@ -8,7 +8,7 @@ all: compile translate
 compile:
 		$(SCANNER) $(SCANNER_PARAMS)
 		$(PARSER) $(PARSER_PARAMS)
-		g++ -o glf y.tab.c -ll
+		gcc -o glf y.tab.c -ll
 
 run: 	glf
 		clear
@@ -19,7 +19,7 @@ debug:	PARSER_PARAMS += -Wcounterexamples -Wconflicts-sr -Wconflicts-rr -Wcex -W
 debug: 	all
 
 translate: glf
-		./glf exemplo.jsc circulo.jsc quadrado.jsc
+		./glf exemplo.jsc
 
 clear:
 	rm y.tab.c

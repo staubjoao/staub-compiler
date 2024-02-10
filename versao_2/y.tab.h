@@ -137,7 +137,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 71 "sintatico.y"
+#line 63 "sintatico.y"
 
 
 struct var_name { 
@@ -148,7 +148,7 @@ struct var_name {
 struct var_name2 { 
 	char name[100]; 
 	struct node* nd;
-	char type[5];
+	char type[10];
 } nd_obj2; 
 
 
