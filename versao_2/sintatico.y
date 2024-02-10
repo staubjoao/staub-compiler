@@ -158,11 +158,12 @@ body: body_statement body { $$.nd = mknode($1.nd, $2.nd, "statement_body"); }
 }
 ;
 
-body_statement: TK_PRINTF { add('K'); } '(' TK_STRING ')' ';' {
-    $$.nd = mknode(NULL, NULL, $1.name);
+body_statement: TK_FOR { add('K'); } '(' condition ')' '{' body '}' {
+    $$.nd = mknode($4.nd, $7.nd, $1.name);
 }
-| TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';' {
-    $$.nd = mknode(NULL, NULL, $1.name);
+| TK_IF { add('K'); } '(' condition ')' '{' body '}' else {
+    struct node *iff = mknode($4.nd, $7.nd, $1.name);
+    $$.nd = mknode(iff, $9.nd, "if-else");
 }
 | statement_class ';' {
     $$.nd = mknode(NULL, NULL, $1.name);
@@ -170,12 +171,11 @@ body_statement: TK_PRINTF { add('K'); } '(' TK_STRING ')' ';' {
 | statement ';' {
     $$.nd = $1.nd;
 }
-| TK_IF { add('K'); } '(' condition ')' '{' body '}' else {
-    struct node *iff = mknode($4.nd, $7.nd, $1.name);
-    $$.nd = mknode(iff, $9.nd, "if-else");
+| TK_PRINTF { add('K'); } '(' TK_STRING ')' ';' {
+    $$.nd = mknode(NULL, NULL, $1.name);
 }
-| TK_FOR { add('K'); } '(' condition ')' '{' body '}' {
-    $$.nd = mknode($4.nd, $7.nd, $1.name);
+| TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';' {
+    $$.nd = mknode(NULL, NULL, $1.name);
 }
 ;
 
@@ -276,7 +276,6 @@ statement: datatype TK_ID { add('V'); } init {
             $$.nd = mknode($1.nd, $4.nd, "="); 
         }
 	}
-    printf("Teste2 %s\n", id_type);
 }
 | TK_ID { check_declaration($1.name); } relop expression {
     $1.nd = mknode(NULL, NULL, $1.name);
@@ -545,12 +544,12 @@ int main(int argc, char **argv)
     printf("\n\n");
     printf("FASE 3: ANALISE SEMANTICA \n\n");
 	if(sem_errors>0) {
-		printf("Semantic analysis completed with %d errors\n", sem_errors);
+		printf("Análise semântica concluída com %d erros\n", sem_errors);
 		for(int i = 0; i < sem_errors; i++){
-			printf("\t - %s", errors[i]);
+			printf("%s", errors[i]);
 		}
 	} else {
-		printf("Semantic analysis completed with no errors");
+		printf("Análise semântica concluída sem erros");
 	}
 	printf("\n\n");
 
@@ -559,8 +558,8 @@ int main(int argc, char **argv)
 
 void print_symbol_table()
 {
-    printf("Symbol Table:\n");
-    printf("%-25s |%-15s |%-15s |%-7s |%-20s|\n", "Identifier", "Data Type", "Type", "Line No", "Filename");
+    printf("\n\nTABELA DE SIMBOLOS:\n\n");
+    printf("%-25s |%-15s |%-15s |%-7s |%-20s|\n", "IDENTIFICADOR", "TIPO DE DADO", "TIPO", "LINHA", "ARQUIVO");
     char aux_line[10];
     for (int i = 0; i < count; i++)
     {
@@ -612,7 +611,7 @@ void check_return_type(const char *value) {
         return;
     }
 
-    sprintf(errors[sem_errors], "Line %d: Return type mismatch\n", countn+1);
+    sprintf(errors[sem_errors], "Erro na linha %d: Incompatibilidade de tipo de retorno\n", countn+1);
     sem_errors++;
 
 }
@@ -642,7 +641,7 @@ int check_types(const char *type1, const char *type2){
 void check_declaration(const char *c) {    
     q = search(c);    
     if(!q) {
-        sprintf(errors[sem_errors], "Line %d: Variable \"%s\" not declared before usage!\n", countn+1, c);  
+        sprintf(errors[sem_errors], "Erro na linha %d: Variável \"%s\" não foi declarada!\n", countn+1, c);  
         sem_errors++;
     }
 }
@@ -658,9 +657,9 @@ char *get_type(const char *var){
 
 void add(char c) {
     if(c == 'V'){
-		for(int i=0; i<10; i++){
+		for(int i = 0; i < 12; i++){
 			if(!strcmp(reserved[i], strdup(yytext))){
-        		sprintf(errors[sem_errors], "Line %d: Variable name \"%s\" is a reserved keyword!\n", countn+1, yytext);
+        		sprintf(errors[sem_errors], "Erro na linha %d: O nome da Erro na linha \"%s\" é uma palavra reservada!\n", countn+1, yytext);
 				sem_errors++;
 				return;
 			}

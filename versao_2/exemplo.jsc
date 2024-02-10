@@ -6,7 +6,9 @@ Principal {
 
         leia("%d", &x);
 
+        
         x = 35;
+
 
         inteiro i = 0;
         enquanto(i < 10) {
@@ -23,9 +25,9 @@ Principal {
         }
 
         // teste
-        // Circulo circulo = Circulo();
+        Circulo circulo = Circulo();
 
-        // circulo.raio = 5.1;
+        circulo.raio = 5.1;
         retorno x;
     }
 }
