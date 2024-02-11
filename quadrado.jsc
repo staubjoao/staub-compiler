@@ -4,11 +4,13 @@ forma Quadrado {
     inteiro lado;
 
     inteiro calculaArea() {
-        retorno lado * lado;
+        inteiro ladoQuadrado = lado * lado;
+        retorno ladoQuadrado;
     }
 
-    decimal calcularPerimetro() {
-        perimetro
-        retorno circuferencia;
+    inteiro calcularPerimetro() {
+        inteiro perimetro = lado * 4;
+        retorno perimetro;
     }
+
 }

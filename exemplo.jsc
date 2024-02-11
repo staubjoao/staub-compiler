@@ -19,6 +19,7 @@ Principal {
             i++;
         }
 
+
         se(x == 35) {
             inteiro y;
             imprime("Teste");
