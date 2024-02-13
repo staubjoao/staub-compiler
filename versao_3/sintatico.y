@@ -15,7 +15,7 @@
     void add(char);
     void print_symbol_table();
     void insert_type();
-    void printtree(struct node*);
+    void printtree(struct node *);
     void printInorder(struct node *);
     int search(const char *);
 	void insert_type();
@@ -41,6 +41,16 @@
 		char *token; 
 	};
 
+
+    struct tree_class_l* create_tree_class_l(char *filename);
+    void free_tree_class_l(struct tree_class_l *tree);
+
+    struct tree_class_l {
+        struct node *head;
+        char * filename;
+        struct tree_class_l *next;
+    };
+
     char file_name_current[MAX_FILENAME_LEN];
     int count=0;
     int count_lines;
@@ -49,6 +59,9 @@
     char *function_return;
     extern int countn;
 	struct node *head;
+	struct node *class_aux;
+    struct tree_class_l *head_class_l = NULL;
+    int princial_bool = 0;
 	int sem_errors=0;
 	int ic_idx=0;
 	int temp_var=0;
@@ -85,25 +98,26 @@ struct var_name2 {
 %%
 
 program: class {
-    head = $1.nd;
+    class_aux = $1.nd;
 }
 | headers TK_CLASS_DEFINITION_MAIN '{' class_body_main '}' { 
-    // $2.nd = mknode($4.nd, NULL, "main_class"); 
-    // $$.nd = mknode($1.nd, $2.nd, "program"); 
-    // head = $$.nd; 
+    $2.nd = mknode($4.nd, NULL, "main_class"); 
+    $$.nd = mknode($1.nd, $2.nd, "program"); 
+    head = $$.nd; 
+    princial_bool = 1;
 } 
 ;
 
 headers: include ';' headers { 
-    // $$.nd = mknode($1.nd, $3.nd, "headers");
+    $$.nd = mknode($1.nd, $3.nd, "headers");
 } 
 | {
-    // $$.nd = NULL;
+    $$.nd = NULL;
 }
 ;
 
 include: TK_INCLUDE TK_INCLUDE_CLASS { add('H'); } {
-    // $$.nd = mknode(NULL, NULL, $2.name); 
+    $$.nd = mknode(NULL, NULL, $2.name); 
 }
 ;
 
@@ -113,7 +127,7 @@ class: class_defination '{' class_body '}' {
 ;
 
 class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { add('Z'); } { 
-    // $$.nd = mknode($1.nd, $2.nd, "class"); 
+    $$.nd = mknode($1.nd, $2.nd, "class"); 
 }
 ;
 
@@ -174,39 +188,39 @@ datatype: TK_TYPE_INT { insert_type(); }
 ;
 
 body: body_statement body { 
-    // $$.nd = mknode($1.nd, $2.nd, "statement_body"); 
+    $$.nd = mknode($1.nd, $2.nd, "statement_body"); 
 }
 | {
-    // $$.nd = NULL;
+    $$.nd = NULL;
 }
 ;
 
 body_statement: TK_FOR { add('K'); } '(' condition ')' '{' body '}' {
-    // $$.nd = mknode($4.nd, $7.nd, $1.name);
+    $$.nd = mknode($4.nd, $7.nd, $1.name);
 }
 | TK_IF { add('K'); } '(' condition ')' '{' body '}' else {
-    // struct node *iff = mknode($4.nd, $7.nd, $1.name);
-    // $$.nd = mknode(iff, $9.nd, "if-else");
+    struct node *iff = mknode($4.nd, $7.nd, $1.name);
+    $$.nd = mknode(iff, $9.nd, "if-else");
 }
 | statement_class ';' {
-    // $$.nd = mknode(NULL, NULL, $1.name);
+    $$.nd = mknode(NULL, NULL, $1.name);
 }
 | statement ';' {
-    // $$.nd = $1.nd;
+    $$.nd = $1.nd;
 }
 | TK_PRINTF { add('K'); } '(' TK_STRING ')' ';' {
-    // $$.nd = mknode(NULL, NULL, $1.name);
+    $$.nd = mknode(NULL, NULL, $1.name);
 }
 | TK_SCANF { add('K'); } '(' TK_STRING ',' '&' TK_ID ')' ';' {
-    // $$.nd = mknode(NULL, NULL, $1.name);
+    $$.nd = mknode(NULL, NULL, $1.name);
 }
 ;
 
 else: TK_ELSE { add('K'); } '{' body '}' {
-    // $$.nd = mknode(NULL, $4.nd, $1.name);
+    $$.nd = mknode(NULL, $4.nd, $1.name);
 }
 | { 
-    // $$.nd = NULL;
+    $$.nd = NULL;
 }
 ;
 
@@ -214,7 +228,7 @@ statement_class: TK_CLASS_NAME { insert_type(); } TK_ID { add('O'); } '=' TK_CLA
 ;
 
 condition: value relop value {
-    // $$.nd = mknode($1.nd, $3.nd, $2.name);
+    $$.nd = mknode($1.nd, $3.nd, $2.name);
 }
 | TK_TRUE { add('K'); $$.nd = NULL; }
 | TK_FALSE { add('K'); $$.nd = NULL; }
@@ -230,264 +244,264 @@ statement_atributes: datatype TK_ID { add('A'); } init  {
 ;
 
 statement: datatype TK_ID { add('V'); } init {
-    // $2.nd = mknode(NULL, NULL, $2.name); 
-    // int t = check_types($1.name, $4.type);  
-    // if(t > 0) {
-    //     if(t == 1) {    
-    //         struct node *temp = mknode(NULL, $4.nd, "decimal_para_inteiro");
-    //         $$.nd = mknode($2.nd, temp, "declaration");   
-    //     }   
-    //     else if(t == 2) {
-    //         struct node *temp = mknode(NULL, $4.nd, "inteiro_para_decimal");
-    //         $$.nd = mknode($2.nd, temp, "declaration");   
-    //     }   
-    //     else if(t == 3) {    
-    //         struct node *temp = mknode(NULL, $4.nd, "caracter_para_inteiro");
-    //         $$.nd = mknode($2.nd, temp, "declaration");   
-    //     }   
-    //     else if(t == 4) {    
-    //         struct node *temp = mknode(NULL, $4.nd, "inteiro_para_caracter");
-    //         $$.nd = mknode($2.nd, temp, "declaration");   
-    //     }   
-    //     else if(t == 5) {    
-    //         struct node *temp = mknode(NULL, $4.nd, "caracter_para_decimal");
-    //         $$.nd = mknode($2.nd, temp, "declaration");   
-    //     }   
-    //     else {   
-    //         struct node *temp = mknode(NULL, $4.nd, "decimal_para_caracter");
-    //         $$.nd = mknode($2.nd, temp, "declaration");   
-    //     }
-    // }
-    // else {   
-    //     $$.nd = mknode($2.nd, $4.nd, "declaration");  
-    // } 
+    $2.nd = mknode(NULL, NULL, $2.name); 
+    int t = check_types($1.name, $4.type);  
+    if(t > 0) {
+        if(t == 1) {    
+            struct node *temp = mknode(NULL, $4.nd, "decimal_para_inteiro");
+            $$.nd = mknode($2.nd, temp, "declaration");   
+        }   
+        else if(t == 2) {
+            struct node *temp = mknode(NULL, $4.nd, "inteiro_para_decimal");
+            $$.nd = mknode($2.nd, temp, "declaration");   
+        }   
+        else if(t == 3) {    
+            struct node *temp = mknode(NULL, $4.nd, "caracter_para_inteiro");
+            $$.nd = mknode($2.nd, temp, "declaration");   
+        }   
+        else if(t == 4) {    
+            struct node *temp = mknode(NULL, $4.nd, "inteiro_para_caracter");
+            $$.nd = mknode($2.nd, temp, "declaration");   
+        }   
+        else if(t == 5) {    
+            struct node *temp = mknode(NULL, $4.nd, "caracter_para_decimal");
+            $$.nd = mknode($2.nd, temp, "declaration");   
+        }   
+        else {   
+            struct node *temp = mknode(NULL, $4.nd, "decimal_para_caracter");
+            $$.nd = mknode($2.nd, temp, "declaration");   
+        }
+    }
+    else {   
+        $$.nd = mknode($2.nd, $4.nd, "declaration");  
+    } 
 }
 | TK_ID { check_declaration($1.name); } '=' expression  {
-    // $1.nd = mknode(NULL, NULL, $1.name); 
-    // char *id_type = get_type($1.name); 
-    // if (id_type != NULL) {
-    //     if(strcmp(id_type, $4.type)) {
-    //         if(!strcmp(id_type, "inteiro")) {
-    //             if(!strcmp($4.type, "decimal")) {
-    //                 struct node *temp = mknode(NULL, $4.nd, "decimal_para_inteiro");
-    //                 $$.nd = mknode($1.nd, temp, "="); 
-    //             }
-    //             else {
-    //                 struct node *temp = mknode(NULL, $4.nd, "caracter_para_inteiro");
-    //                 $$.nd = mknode($1.nd, temp, "="); 
-    //             }
+    $1.nd = mknode(NULL, NULL, $1.name); 
+    char *id_type = get_type($1.name); 
+    if (id_type != NULL) {
+        if(strcmp(id_type, $4.type)) {
+            if(!strcmp(id_type, "inteiro")) {
+                if(!strcmp($4.type, "decimal")) {
+                    struct node *temp = mknode(NULL, $4.nd, "decimal_para_inteiro");
+                    $$.nd = mknode($1.nd, temp, "="); 
+                }
+                else {
+                    struct node *temp = mknode(NULL, $4.nd, "caracter_para_inteiro");
+                    $$.nd = mknode($1.nd, temp, "="); 
+                }
                 
-    //         }
-    //         else if(!strcmp(id_type, "decimal")) {
-    //             if(!strcmp($4.type, "inteiro")){
-    //                 struct node *temp = mknode(NULL, $4.nd, "inteiro_para_decimal");
-    //                 $$.nd = mknode($1.nd, temp, "="); 
-    //             }
-    //             else{
-    //                 struct node *temp = mknode(NULL, $4.nd, "caracter_para_decimal");
-    //                 $$.nd = mknode($1.nd, temp, "="); 
-    //             }
+            }
+            else if(!strcmp(id_type, "decimal")) {
+                if(!strcmp($4.type, "inteiro")){
+                    struct node *temp = mknode(NULL, $4.nd, "inteiro_para_decimal");
+                    $$.nd = mknode($1.nd, temp, "="); 
+                }
+                else{
+                    struct node *temp = mknode(NULL, $4.nd, "caracter_para_decimal");
+                    $$.nd = mknode($1.nd, temp, "="); 
+                }
                 
-    //         }
-    //         else {
-    //             if(!strcmp($4.type, "inteiro")) {
-    //                 struct node *temp = mknode(NULL, $4.nd, "inteiro_para_caracter");
-    //                 $$.nd = mknode($1.nd, temp, "="); 
-    //             }
-    //             else {
-    //                 struct node *temp = mknode(NULL, $4.nd, "decimal_para_caracter");
-    //                 $$.nd = mknode($1.nd, temp, "="); 
-    //             }
-    //         }
-    //     }
-    //     else {
-    //         $$.nd = mknode($1.nd, $4.nd, "="); 
-    //     }
-	// }
+            }
+            else {
+                if(!strcmp($4.type, "inteiro")) {
+                    struct node *temp = mknode(NULL, $4.nd, "inteiro_para_caracter");
+                    $$.nd = mknode($1.nd, temp, "="); 
+                }
+                else {
+                    struct node *temp = mknode(NULL, $4.nd, "decimal_para_caracter");
+                    $$.nd = mknode($1.nd, temp, "="); 
+                }
+            }
+        }
+        else {
+            $$.nd = mknode($1.nd, $4.nd, "="); 
+        }
+	}
 }
 | TK_ID { check_declaration($1.name); } relop expression {
-    // $1.nd = mknode(NULL, NULL, $1.name);
-    // $$.nd = mknode($1.nd, $4.nd, $3.name);
+    $1.nd = mknode(NULL, NULL, $1.name);
+    $$.nd = mknode($1.nd, $4.nd, $3.name);
 }
 | TK_ID { check_declaration($1.name); } TK_UNARY {
-    // $1.nd = mknode(NULL, NULL, $1.name); 
-    // $3.nd = mknode(NULL, NULL, $3.name); 
-    // $$.nd = mknode($1.nd, $3.nd, "iterator");
+    $1.nd = mknode(NULL, NULL, $1.name); 
+    $3.nd = mknode(NULL, NULL, $3.name); 
+    $$.nd = mknode($1.nd, $3.nd, "iterator");
 }
 | TK_ID { check_declaration($1.name); } '.' TK_ID { /* ADICIONAR FUNÇÃO PARA VALIDAR O ATRIBUTO OU METODO */} init {
-    // $4.nd = mknode(NULL, NULL, $4.name); 
-    // $$.nd = mknode($4.nd, $6.nd, ".");
+    $4.nd = mknode(NULL, NULL, $4.name); 
+    $$.nd = mknode($4.nd, $6.nd, ".");
 }
 ;
 
 init: '=' expression { 
-    // $$.nd = $2.nd; 
-    // sprintf($$.type, "%s", $2.type);
-    // strcpy($$.name, $2.name);
+    $$.nd = $2.nd; 
+    sprintf($$.type, "%s", $2.type);
+    strcpy($$.name, $2.name);
 }
 | { 
-    // sprintf($$.type, "null"); 
-    // $$.nd = mknode(NULL, NULL, "NULL"); 
-    // strcpy($$.name, "NULL"); 
+    sprintf($$.type, "null"); 
+    $$.nd = mknode(NULL, NULL, "NULL"); 
+    strcpy($$.name, "NULL"); 
 }
 ;
 
 expression: expression TK_MULTIPLY expression { 
-    // if(!strcmp($1.type, $3.type)) {
-    //     sprintf($$.type, "%s", $1.type);
-	// 	$$.nd = mknode($1.nd, $3.nd, $2.name); 
-	// }
-	// else {
-	// 	if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "decimal")) {
-	// 		struct node *temp = mknode(NULL, $1.nd, "inteiro_para_decimal");
-    //         sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "inteiro")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "inteiro_para_decimal");
-    //         sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "caracter")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "caracter_para_inteiro");
-	// 		sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "caracter") && !strcmp($3.type, "inteiro")) {
-	// 		struct node *temp = mknode(NULL, $1.nd, "caracter_para_inteiro");
-	// 		sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "caracter")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "caracter_para_decimal");
-	// 		sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else {
-	// 		struct node *temp = mknode(NULL, $1.nd, "caracter_para_decimal");
-	// 		sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// }
+    if(!strcmp($1.type, $3.type)) {
+        sprintf($$.type, "%s", $1.type);
+		$$.nd = mknode($1.nd, $3.nd, $2.name); 
+	}
+	else {
+		if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "decimal")) {
+			struct node *temp = mknode(NULL, $1.nd, "inteiro_para_decimal");
+            sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+		else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "inteiro")) {
+			struct node *temp = mknode(NULL, $3.nd, "inteiro_para_decimal");
+            sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "caracter")) {
+			struct node *temp = mknode(NULL, $3.nd, "caracter_para_inteiro");
+			sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else if(!strcmp($1.type, "caracter") && !strcmp($3.type, "inteiro")) {
+			struct node *temp = mknode(NULL, $1.nd, "caracter_para_inteiro");
+			sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+		else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "caracter")) {
+			struct node *temp = mknode(NULL, $3.nd, "caracter_para_decimal");
+			sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else {
+			struct node *temp = mknode(NULL, $1.nd, "caracter_para_decimal");
+			sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+	}
 }
 | expression TK_DIVIDE expression {
-    // if(!strcmp($1.type, $3.type)) {
-    //     sprintf($$.type, "%s", $1.type);
-	// 	$$.nd = mknode($1.nd, $3.nd, $2.name); 
-	// }
-	// else {
-	// 	if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "decimal")) {
-	// 		struct node *temp = mknode(NULL, $1.nd, "inteiro_para_decimal");
-    //         sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "inteiro")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "inteiro_para_decimal");
-    //         sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "caracter")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "caracter_para_inteiro");
-	// 		sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "caracter") && !strcmp($3.type, "inteiro")) {
-	// 		struct node *temp = mknode(NULL, $1.nd, "caracter_para_inteiro");
-	// 		sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "caracter")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "caracter_para_decimal");
-	// 		sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else {
-	// 		struct node *temp = mknode(NULL, $1.nd, "caracter_para_decimal");
-	// 		sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// } 
+    if(!strcmp($1.type, $3.type)) {
+        sprintf($$.type, "%s", $1.type);
+		$$.nd = mknode($1.nd, $3.nd, $2.name); 
+	}
+	else {
+		if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "decimal")) {
+			struct node *temp = mknode(NULL, $1.nd, "inteiro_para_decimal");
+            sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+		else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "inteiro")) {
+			struct node *temp = mknode(NULL, $3.nd, "inteiro_para_decimal");
+            sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "caracter")) {
+			struct node *temp = mknode(NULL, $3.nd, "caracter_para_inteiro");
+			sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else if(!strcmp($1.type, "caracter") && !strcmp($3.type, "inteiro")) {
+			struct node *temp = mknode(NULL, $1.nd, "caracter_para_inteiro");
+			sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+		else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "caracter")) {
+			struct node *temp = mknode(NULL, $3.nd, "caracter_para_decimal");
+			sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else {
+			struct node *temp = mknode(NULL, $1.nd, "caracter_para_decimal");
+			sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+	} 
 }
 | expression TK_SUBTRACT expression {
-    // if(!strcmp($1.type, $3.type)) {
-    //     sprintf($$.type, "%s", $1.type);
-	// 	$$.nd = mknode($1.nd, $3.nd, $2.name); 
-	// }
-	// else {
-	// 	if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "decimal")) {
-	// 		struct node *temp = mknode(NULL, $1.nd, "inteiro_para_decimal");
-    //         sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "inteiro")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "inteiro_para_decimal");
-    //         sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "caracter")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "caracter_para_inteiro");
-	// 		sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "caracter") && !strcmp($3.type, "inteiro")) {
-	// 		struct node *temp = mknode(NULL, $1.nd, "caracter_para_inteiro");
-	// 		sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "caracter")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "caracter_para_decimal");
-	// 		sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else {
-	// 		struct node *temp = mknode(NULL, $1.nd, "caracter_para_decimal");
-	// 		sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// } 
+    if(!strcmp($1.type, $3.type)) {
+        sprintf($$.type, "%s", $1.type);
+		$$.nd = mknode($1.nd, $3.nd, $2.name); 
+	}
+	else {
+		if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "decimal")) {
+			struct node *temp = mknode(NULL, $1.nd, "inteiro_para_decimal");
+            sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+		else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "inteiro")) {
+			struct node *temp = mknode(NULL, $3.nd, "inteiro_para_decimal");
+            sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "caracter")) {
+			struct node *temp = mknode(NULL, $3.nd, "caracter_para_inteiro");
+			sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else if(!strcmp($1.type, "caracter") && !strcmp($3.type, "inteiro")) {
+			struct node *temp = mknode(NULL, $1.nd, "caracter_para_inteiro");
+			sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+		else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "caracter")) {
+			struct node *temp = mknode(NULL, $3.nd, "caracter_para_decimal");
+			sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else {
+			struct node *temp = mknode(NULL, $1.nd, "caracter_para_decimal");
+			sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+	} 
 }
 | expression TK_ADD expression {
-    // if(!strcmp($1.type, $3.type)) {
-    //     sprintf($$.type, "%s", $1.type);
-	// 	$$.nd = mknode($1.nd, $3.nd, $2.name); 
-	// }
-	// else {
-	// 	if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "decimal")) {
-	// 		struct node *temp = mknode(NULL, $1.nd, "inteiro_para_decimal");
-    //         sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "inteiro")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "inteiro_para_decimal");
-    //         sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "caracter")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "caracter_para_inteiro");
-	// 		sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "caracter") && !strcmp($3.type, "inteiro")) {
-	// 		struct node *temp = mknode(NULL, $1.nd, "caracter_para_inteiro");
-	// 		sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// 	else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "caracter")) {
-	// 		struct node *temp = mknode(NULL, $3.nd, "caracter_para_decimal");
-	// 		sprintf($$.type, "%s", $1.type);
-	// 		$$.nd = mknode($1.nd, temp, $2.name);
-	// 	}
-	// 	else {
-	// 		struct node *temp = mknode(NULL, $1.nd, "caracter_para_decimal");
-	// 		sprintf($$.type, "%s", $3.type);
-	// 		$$.nd = mknode(temp, $3.nd, $2.name);
-	// 	}
-	// } 
+    if(!strcmp($1.type, $3.type)) {
+        sprintf($$.type, "%s", $1.type);
+		$$.nd = mknode($1.nd, $3.nd, $2.name); 
+	}
+	else {
+		if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "decimal")) {
+			struct node *temp = mknode(NULL, $1.nd, "inteiro_para_decimal");
+            sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+		else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "inteiro")) {
+			struct node *temp = mknode(NULL, $3.nd, "inteiro_para_decimal");
+            sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else if(!strcmp($1.type, "inteiro") && !strcmp($3.type, "caracter")) {
+			struct node *temp = mknode(NULL, $3.nd, "caracter_para_inteiro");
+			sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else if(!strcmp($1.type, "caracter") && !strcmp($3.type, "inteiro")) {
+			struct node *temp = mknode(NULL, $1.nd, "caracter_para_inteiro");
+			sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+		else if(!strcmp($1.type, "decimal") && !strcmp($3.type, "caracter")) {
+			struct node *temp = mknode(NULL, $3.nd, "caracter_para_decimal");
+			sprintf($$.type, "%s", $1.type);
+			$$.nd = mknode($1.nd, temp, $2.name);
+		}
+		else {
+			struct node *temp = mknode(NULL, $1.nd, "caracter_para_decimal");
+			sprintf($$.type, "%s", $3.type);
+			$$.nd = mknode(temp, $3.nd, $2.name);
+		}
+	} 
 }
 | value { 
-    // strcpy($$.name, $1.name); 
-    // sprintf($$.type, "%s", $1.type);
-    // $$.nd = $1.nd; 
+    strcpy($$.name, $1.name); 
+    sprintf($$.type, "%s", $1.type);
+    $$.nd = $1.nd; 
 }
 ;
 
@@ -562,6 +576,17 @@ int main(int argc, char **argv)
         yyparse();
 
         fclose(fp);
+        if(!princial_bool) {
+            struct tree_class_l *class_act = create_tree_class_l(argv[i]);
+            class_act->head = class_aux;
+            if(head_class_l == NULL) {
+                head_class_l = class_act;
+            }else {
+                class_act->next = head_class_l;
+                head_class_l = class_act;
+            }
+            class_aux = NULL;
+        }
     }
     print_symbol_table();
 
@@ -570,8 +595,17 @@ int main(int argc, char **argv)
         free(symbol_table[i].type);
     }
 
+    struct tree_class_l *aux;
+
     printf("\n\n");
 	printf("FASE 2: ANALISE SINTATICA\n\n");
+    aux = head_class_l;
+    while(aux != NULL) {
+        printf("\nArquivo: %s\n", aux->filename);
+        printtree(aux->head);
+        aux = aux->next;
+    }
+
 	printtree(head);
     
     printf("\n\n");
@@ -672,6 +706,33 @@ int check_types(const char *type1, const char *type2){
     return -1;
 }
 
+struct tree_class_l* create_tree_class_l(char *filename) {
+    struct tree_class_l *new_tree = (struct tree_class_l*)malloc(sizeof(struct tree_class_l));
+    if (new_tree == NULL) {
+        fprintf(stderr, "Erro ao alocar memória para a estrutura tree_class_l\n");
+        exit(EXIT_FAILURE);
+    }
+
+    new_tree->head = NULL;
+    new_tree->filename = strdup(filename);
+    if (new_tree->filename == NULL) {
+        fprintf(stderr, "Erro ao alocar memória para o nome do arquivo\n");
+        free(new_tree);
+        exit(EXIT_FAILURE);
+    }
+
+    new_tree->next = NULL;
+
+    return new_tree;
+}
+
+void free_tree_class_l(struct tree_class_l *tree) {
+    if (tree != NULL) {
+        free(tree->filename);
+        free(tree);
+    }
+}
+
 void check_declaration(const char *c) {    
     q = search(c);    
     if(!q) {
@@ -703,7 +764,7 @@ void add(char c) {
     if(!q) {
         if(c == 'H') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);    
-            symbol_table[count].data_type=strdup(type);     
+            symbol_table[count].data_type=strdup(yylval.nd_obj.name);     
             symbol_table[count].line_no=countn;    
             symbol_table[count].type=strdup("Header");
             symbol_table[count].filename=strdup(file_name_current);
@@ -776,6 +837,7 @@ void add(char c) {
         }else if(c == 'R') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(function_return);
+            function_return = NULL;
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Return");   
             symbol_table[count].filename=strdup(file_name_current);

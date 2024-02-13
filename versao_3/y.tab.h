@@ -139,7 +139,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 64 "sintatico.y"
+#line 77 "sintatico.y"
 
 
 struct var_name { 
