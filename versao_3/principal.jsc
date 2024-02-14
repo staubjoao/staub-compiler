@@ -26,7 +26,7 @@ Principal {
             imprime("Teste");
         }
 
-        Circulo circulo = Circulo();
+        Circulo circulo;
 
         circulo.raio = 5.1;
         retorno x;

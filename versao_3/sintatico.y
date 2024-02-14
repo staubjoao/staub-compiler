@@ -6,7 +6,7 @@
     #include"lex.yy.c"
 
     #define MAX_SYMBOLS 100
-    #define MAX_FILENAME_LEN 30
+    #define MAX_FILE_NAME_LEN 30
     #define MAX_TOKEN_LEN 20
     
     void yyerror(const char *s);
@@ -22,6 +22,7 @@
 	void print_tree(struct node*);
 	void print_inorder(struct node *);
     void check_declaration(const char *);
+    void check_atribute(const char *, const char *);
 	void function_check_return(const char *);
 	int check_types(const char *, const char *);
 	char *get_type(const char *);
@@ -31,7 +32,8 @@
         char * id_name;
         char * data_type;
         char * type;
-        char * filename;
+        char * file_name;
+        char * class_name;
         int line_no;
     } symbol_table[MAX_SYMBOLS];
 
@@ -42,16 +44,17 @@
 	};
 
 
-    struct tree_class_l* create_tree_class_l(char *filename);
+    struct tree_class_l* create_tree_class_l(char *file_name);
     void free_tree_class_l(struct tree_class_l *tree);
 
     struct tree_class_l {
         struct node *head;
-        char * filename;
+        char * file_name;
         struct tree_class_l *next;
     };
 
-    char file_name_current[MAX_FILENAME_LEN];
+    char file_name_current[MAX_FILE_NAME_LEN];
+    char *class_name_current;
     int count=0;
     int count_lines;
     int q;
@@ -100,8 +103,8 @@ struct var_name2 {
 program: class {
     class_aux = $1.nd;
 }
-| headers TK_CLASS_DEFINITION_MAIN '{' class_body_main '}' { 
-    $2.nd = mknode($4.nd, NULL, "main_class"); 
+| headers TK_CLASS_DEFINITION_MAIN { add('Z'); } '{' class_body_main '}'  { 
+    $2.nd = mknode($5.nd, NULL, "main_class"); 
     $$.nd = mknode($1.nd, $2.nd, "program"); 
     head = $$.nd; 
     princial_bool = 1;
@@ -128,6 +131,7 @@ class: class_defination '{' class_body '}' {
 
 class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { add('Z'); } { 
     $$.nd = mknode($1.nd, $2.nd, "class"); 
+    class_name_current = strdup($2.name);
 }
 ;
 
@@ -224,7 +228,7 @@ else: TK_ELSE { add('K'); } '{' body '}' {
 }
 ;
 
-statement_class: TK_CLASS_NAME { insert_type(); } TK_ID { add('O'); } '=' TK_CLASS_NAME '(' ')'
+statement_class: TK_CLASS_NAME { insert_type(); } TK_ID { add('O'); }
 ;
 
 condition: value relop value {
@@ -328,7 +332,7 @@ statement: datatype TK_ID { add('V'); } init {
     $3.nd = mknode(NULL, NULL, $3.name); 
     $$.nd = mknode($1.nd, $3.nd, "iterator");
 }
-| TK_ID { check_declaration($1.name); } '.' TK_ID { /* ADICIONAR FUNÇÃO PARA VALIDAR O ATRIBUTO OU METODO */} init {
+| TK_ID { check_declaration($1.name); } '.' TK_ID { check_atribute($1.name, $4.name); } init {
     $4.nd = mknode(NULL, NULL, $4.name); 
     $$.nd = mknode($4.nd, $6.nd, ".");
 }
@@ -552,6 +556,7 @@ return: TK_RETURN { add('R'); } value ';' {
 | { 
     $$.nd = NULL; 
     function_return = NULL;
+    function_check_return("NULL");
 }
 ;
 
@@ -601,7 +606,7 @@ int main(int argc, char **argv)
 	printf("FASE 2: ANALISE SINTATICA\n\n");
     aux = head_class_l;
     while(aux != NULL) {
-        printf("\nArquivo: %s\n", aux->filename);
+        printf("\nArquivo: %s\n", aux->file_name);
         printtree(aux->head);
         aux = aux->next;
     }
@@ -626,13 +631,13 @@ int main(int argc, char **argv)
 void print_symbol_table()
 {
     printf("\n\nTABELA DE SIMBOLOS:\n\n");
-    printf("%-25s |%-15s |%-15s |%-7s |%-20s|\n", "IDENTIFICADOR", "TIPO DE DADO", "TIPO", "LINHA", "ARQUIVO");
+    printf("%-25s |%-15s |%-15s |%-15s |%-7s |%-20s|\n", "IDENTIFICADOR", "TIPO DE DADO", "TIPO", "CLASSE", "LINHA", "ARQUIVO");
     char aux_line[10];
     for (int i = 0; i < count; i++)
     {
         sprintf(aux_line, "%5d", symbol_table[i].line_no);
-        printf("%-25s |%-15s |%-15s |%-7s |%-20s|\n", symbol_table[i].id_name, symbol_table[i].data_type,
-               symbol_table[i].type, aux_line, symbol_table[i].filename);
+        printf("%-25s |%-15s |%-15s |%-15s |%-7s |%-20s|\n", symbol_table[i].id_name, symbol_table[i].data_type,
+               symbol_table[i].type, symbol_table[i].class_name, aux_line, symbol_table[i].file_name);
     }
 }
 
@@ -670,17 +675,21 @@ void insert_type() {
 }
 
 void function_check_return(const char *value) {
-	char *main_datatype = get_type(symbol_table[count-1].data_type);
+	char *function_datatype = get_type(symbol_table[count-1].data_type);
+    if(!strcmp(value, "NULL")) {
+        printf("\n\nTESTE: %s\n\n", value);
+        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: Falta um retorno\n", countn+1, file_name_current);
+        return;
+    }
     char *return_datatype = get_type(value);
 
-    if(main_datatype != NULL && return_datatype != NULL) {
+    if(function_datatype != NULL && return_datatype != NULL) {
 
-        if (return_datatype == NULL || (!strcmp(main_datatype, "inteiro") && !strcmp(return_datatype, "CONST")) || !strcmp(main_datatype, return_datatype)) {
+        if (return_datatype == NULL || (!strcmp(function_datatype, "inteiro") && !strcmp(return_datatype, "CONST")) || !strcmp(function_datatype, return_datatype)) {
             return;
         }
 
-        sprintf(errors[sem_errors], "Erro na linha %d: Incompatibilidade de tipo de retorno\n", countn+1);
-        sem_errors++;
+        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: Incompatibilidade de tipo de retorno\n", countn+1, file_name_current);
     }
 }
 
@@ -706,7 +715,7 @@ int check_types(const char *type1, const char *type2){
     return -1;
 }
 
-struct tree_class_l* create_tree_class_l(char *filename) {
+struct tree_class_l* create_tree_class_l(char *file_name) {
     struct tree_class_l *new_tree = (struct tree_class_l*)malloc(sizeof(struct tree_class_l));
     if (new_tree == NULL) {
         fprintf(stderr, "Erro ao alocar memória para a estrutura tree_class_l\n");
@@ -714,8 +723,8 @@ struct tree_class_l* create_tree_class_l(char *filename) {
     }
 
     new_tree->head = NULL;
-    new_tree->filename = strdup(filename);
-    if (new_tree->filename == NULL) {
+    new_tree->file_name = strdup(file_name);
+    if (new_tree->file_name == NULL) {
         fprintf(stderr, "Erro ao alocar memória para o nome do arquivo\n");
         free(new_tree);
         exit(EXIT_FAILURE);
@@ -728,7 +737,7 @@ struct tree_class_l* create_tree_class_l(char *filename) {
 
 void free_tree_class_l(struct tree_class_l *tree) {
     if (tree != NULL) {
-        free(tree->filename);
+        free(tree->file_name);
         free(tree);
     }
 }
@@ -736,9 +745,26 @@ void free_tree_class_l(struct tree_class_l *tree) {
 void check_declaration(const char *c) {    
     q = search(c);    
     if(!q) {
-        sprintf(errors[sem_errors], "Erro na linha %d: Variável \"%s\" não foi declarada!\n", countn+1, c);  
-        sem_errors++;
+        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: Variável \"%s\" não foi declarada!\n", countn+1, file_name_current, c);  
     }
+}
+
+void check_atribute(const char *object, const char *atribute) {
+
+    int i; 
+    char *class_name_target;
+    for(i = count-1; i >= 0; i--) {
+        if(strcmp(symbol_table[i].id_name, object) == 0) {   
+            class_name_target = strdup(symbol_table[i].data_type);
+            break;
+        }
+    }
+    for(i = count-1; i >= 0; i--) {
+        if((strcmp(symbol_table[i].class_name, class_name_target) == 0) && (strcmp(symbol_table[i].id_name, atribute) == 0)) {   
+            return;
+        }
+    }
+    sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O atributo %s não existe na classe %s\n", countn+1, file_name_current, atribute, class_name_target);
 }
 
 char *get_type(const char *var){
@@ -754,8 +780,7 @@ void add(char c) {
     if(c == 'V'){
 		for(int i = 0; i < 12; i++){
 			if(!strcmp(reserved[i], strdup(yytext))){
-        		sprintf(errors[sem_errors], "Erro na linha %d: O nome da Erro na linha \"%s\" é uma palavra reservada!\n", countn+1, yytext);
-				sem_errors++;
+        		sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O nome da Erro na linha \"%s\" é uma palavra reservada!\n", countn+1, file_name_current, yytext);
 				return;
 			}
 		}
@@ -767,7 +792,8 @@ void add(char c) {
             symbol_table[count].data_type=strdup(yylval.nd_obj.name);     
             symbol_table[count].line_no=countn;    
             symbol_table[count].type=strdup("Header");
-            symbol_table[count].filename=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].class_name=strdup(class_name_current);
             count++;  
         }  
         else if(c == 'K') {
@@ -775,21 +801,24 @@ void add(char c) {
             symbol_table[count].data_type=strdup("N/A");
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Keyword");   
-            symbol_table[count].filename=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].class_name=strdup(class_name_current);
             count++;  
         }  else if(c == 'V') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Variable");   
-            symbol_table[count].filename=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].class_name=strdup(class_name_current);
             count++;  
         }  else if(c == 'C') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup("CONST");
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Constant");   
-            symbol_table[count].filename=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].class_name=strdup(class_name_current);
             count++;  
         }  else if(c == 'F') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
@@ -797,42 +826,49 @@ void add(char c) {
             function_return=strdup(yylval.nd_obj.name);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Function");   
-            symbol_table[count].filename=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].class_name=strdup(class_name_current);
             count++;  
         }else if(c == 'Z') {
+            class_name_current = strdup(yylval.nd_obj.name);
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(yylval.nd_obj.name);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Class");   
-            symbol_table[count].filename=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].class_name=strdup(class_name_current);
             count++;  
         }else if(c == 'O') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Object");   
-            symbol_table[count].filename=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].class_name=strdup(class_name_current);
             count++;  
         }else if(c == 'A') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Attribute");   
-            symbol_table[count].filename=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].class_name=strdup(class_name_current);
             count++;  
         }else if(c == 'X') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Vector");   
-            symbol_table[count].filename=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].class_name=strdup(class_name_current);
             count++;  
         }else if(c == 'P') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Parameter");   
-            symbol_table[count].filename=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].class_name=strdup(class_name_current);
             count++;  
         }else if(c == 'R') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
@@ -840,7 +876,8 @@ void add(char c) {
             function_return = NULL;
             symbol_table[count].line_no=countn;
             symbol_table[count].type=strdup("Return");   
-            symbol_table[count].filename=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].class_name=strdup(class_name_current);
             count++;  
         }
 
