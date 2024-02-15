@@ -8,6 +8,14 @@
     #define MAX_SYMBOLS 100
     #define MAX_FILE_NAME_LEN 30
     #define MAX_TOKEN_LEN 20
+
+    struct param_types {
+        char * type;
+        struct param_types * next;
+    };
+
+    void insert_at_end_l_param(struct param_types **head, char *type);
+    void free_l_param(struct param_types **head);
     
     void yyerror(const char *s);
     int yylex();
@@ -23,7 +31,7 @@
 	void print_inorder(struct node *);
     void check_declaration(const char *);
     void check_atribute(const char *, const char *);
-    void check_method(const char *, const char *, int);
+    void check_method(const char *, const char *, int, struct param_types **head);
 	void function_check_return(const char *);
 	int check_types(const char *, const char *);
 	char *get_type(const char *);
@@ -44,7 +52,6 @@
 		struct node *right; 
 		char *token; 
 	};
-
 
     struct tree_class_l* create_tree_class_l(char *file_name);
     void free_tree_class_l(struct tree_class_l *tree);
@@ -73,6 +80,7 @@
 	int label=0;
 	int is_for=0;
     int param_count=0;
+    struct param_types *head_params_l = NULL;
     int method_current;
 	char buff[100];
 	char errors[100][100];
@@ -143,7 +151,6 @@ class_body: class_atributes class_body {
 }
 |  method_signature '(' atributs_method ')' {
     symbol_table[method_current].num_param = param_count;
-    printf("\n\n%s: %d\n\n", symbol_table[method_current].id_name, symbol_table[method_current].num_param);
     param_count = 0;
 } '{' body return '}' class_body {
     struct node *aux_class = mknode($7.nd, $10.nd, "class_body");
@@ -346,7 +353,10 @@ statement: datatype TK_ID { add('V'); } init {
 | class_call { check_atribute($1.nd->left->token, $1.nd->right->token); } init {
     $$.nd = mknode($1.nd, $3.nd, ".");
 }
-| class_call '(' params_const ')' { check_method($1.nd->left->token, $1.nd->right->token, param_count); } {
+| class_call '(' params_const ')' { 
+    check_method($1.nd->left->token, $1.nd->right->token, param_count, &head_params_l); 
+    free_l_param(&head_params_l);
+} {
     $$.nd = mknode($1.nd, $3.nd, "call_method");
     param_count = 0;
 }
@@ -365,7 +375,8 @@ params_const: param_const ',' params_const {
 ;
 
 param_const: value {
-    // adicionar para validar o tipo dos parametros se pa
+    printf("\n\n%s\n\n", $1.type);
+    insert_at_end_l_param(&head_params_l, $1.type);
 }
 ;
 
@@ -805,8 +816,9 @@ void check_atribute(const char *object, const char *atribute) {
     sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O atributo %s não existe na classe %s\n", countn+1, file_name_current, atribute, class_name_target);
 }
 
-void check_method(const char *object, const char *method, int num_param_call) {
-    int i; 
+void check_method(const char *object, const char *method, int num_param_call, struct param_types **head) {
+    struct param_types *temp = *head;
+    int i, j; 
     char *class_name_target;
     for(i = count-1; i >= 0; i--) {
         if(strcmp(symbol_table[i].id_name, object) == 0) {   
@@ -818,6 +830,15 @@ void check_method(const char *object, const char *method, int num_param_call) {
         if((strcmp(symbol_table[i].class_name, class_name_target) == 0) && (strcmp(symbol_table[i].id_name, method) == 0)) {   
             if (symbol_table[i].num_param != num_param_call) {
                 sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O método %s espera %d parametros e recebeu %d\n", countn+1, file_name_current, method, symbol_table[i].num_param, num_param_call);
+            }
+            int count_paran_index = 1;
+            for(j = i+1; j <= i+num_param_call; j++) {
+                printf("Teste");
+                if((strcmp(symbol_table[j].data_type, temp->type) != 0)) {
+                    sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O parametro de número %d, do tipo %s, não é do tipo esperado %s\n", countn+1, file_name_current, count_paran_index, temp->type, symbol_table[j].data_type);
+                }
+                temp = temp->next;
+                count_paran_index++;
             }
             return;
         }
@@ -943,6 +964,45 @@ int search(const char *type) {
         }
     }
     return 0;
+}
+
+void insert_at_end_l_param(struct param_types **head, char *type) {
+    struct param_types *newNode = (struct param_types *)malloc(sizeof(struct param_types));
+    if (newNode == NULL) {
+        printf("Erro ao alocar memória do, função %s\n", "insert_at_end_l_param");
+        exit(1);
+    }
+
+    newNode->type = (char *)malloc((strlen(type) + 1) * sizeof(char));
+    if (newNode->type == NULL) {
+        printf("Erro ao alocar memória do, função %s\n", "insert_at_end_l_param");
+        exit(1);
+    }
+    strcpy(newNode->type, type);
+
+    newNode->next = NULL;
+
+    if (*head == NULL) {
+        *head = newNode;
+        return;
+    }
+
+    struct param_types *temp = *head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+
+    temp->next = newNode;
+}
+
+void free_l_param(struct param_types **head) {
+    struct param_types *temp;
+    while (*head != NULL) {
+        temp = *head;
+        *head = (*head)->next;
+        free(temp->type);
+        free(temp);
+    }
 }
 
 void yyerror(const char* msg) {
