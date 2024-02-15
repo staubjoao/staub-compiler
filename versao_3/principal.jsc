@@ -29,7 +29,7 @@ Principal {
         Circulo circulo;
 
         circulo.raio = 5.1;
-        circulo.calculaArea(1, 1.1);
+        circulo.calculaArea(1.1, 1);
         retorno x;
     }
 }
