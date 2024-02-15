@@ -1,5 +1,5 @@
 importa circulo.jsc;
-// importa quadrado.jsc;
+importa quadrado.jsc;
 
 Principal {
     inteiro principal() {
@@ -29,6 +29,7 @@ Principal {
         Circulo circulo;
 
         circulo.raio = 5.1;
+        circulo.calculaArea(1, 1);
         retorno x;
     }
 }

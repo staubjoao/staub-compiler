@@ -23,6 +23,7 @@
 	void print_inorder(struct node *);
     void check_declaration(const char *);
     void check_atribute(const char *, const char *);
+    void check_method(const char *, const char *, int);
 	void function_check_return(const char *);
 	int check_types(const char *, const char *);
 	char *get_type(const char *);
@@ -34,6 +35,7 @@
         char * type;
         char * file_name;
         char * class_name;
+        int num_param;
         int line_no;
     } symbol_table[MAX_SYMBOLS];
 
@@ -70,9 +72,10 @@
 	int temp_var=0;
 	int label=0;
 	int is_for=0;
+    int param_count=0;
+    int method_current;
 	char buff[100];
 	char errors[100][100];
-    char reserved[12][10] = {"inteiro", "decimal", "caracter", "palavra", "vazio", "se", "senao", "enquanto", "principal", "retorne", "include", "forma"};
 	char icg[50][100];
 
 %}
@@ -94,7 +97,7 @@ struct var_name2 {
 %token TK_VOID
 %token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_INCLUDE_CLASS TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_STRING TK_CHARACTER
 %type <nd_obj> headers include program class_defination class_atributes class_body class_body_main class method_signature statement_atributes 
-%type <nd_obj> datatype else body body_statement statement_class statement condition return relop atributs_method parament_method
+%type <nd_obj> datatype else body body_statement statement_class statement condition return relop atributs_method parament_method class_call params_const param_const
 %type <nd_obj2> init value expression
 %left <nd_obj> TK_MULTIPLY TK_DIVIDE
 %left <nd_obj> TK_ADD TK_SUBTRACT
@@ -138,9 +141,13 @@ class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { add('Z'); } {
 class_body: class_atributes class_body { 
     $$.nd = mknode($1.nd, $2.nd, "class_body"); 
 }
-|  method_signature '(' atributs_method ')' '{' body return '}' class_body {
-    struct node *aux_class = mknode($6.nd, $9.nd, "class_body");
-    $$.nd = mknode(aux_class, $7.nd, "method");
+|  method_signature '(' atributs_method ')' {
+    symbol_table[method_current].num_param = param_count;
+    printf("\n\n%s: %d\n\n", symbol_table[method_current].id_name, symbol_table[method_current].num_param);
+    param_count = 0;
+} '{' body return '}' class_body {
+    struct node *aux_class = mknode($7.nd, $10.nd, "class_body");
+    $$.nd = mknode(aux_class, $8.nd, "method");
 }
 | { 
     $$.nd = NULL; 
@@ -158,15 +165,19 @@ class_body_main: method_signature '(' atributs_method ')' '{' body return '}' cl
 
 method_signature: datatype TK_ID { add('F'); } {
     $$.nd = mknode(NULL, NULL, $2.name);
+    method_current = count-1;
 }
 ;
 
 
 atributs_method: parament_method ',' atributs_method {
     $$.nd = mknode($1.nd, NULL, "parameter");
+    param_count++;
+
 }
 | parament_method {
     $$.nd = mknode($1.nd, NULL, "parameter");
+    param_count++;
 }
 | {
     $$.nd = NULL;
@@ -332,9 +343,36 @@ statement: datatype TK_ID { add('V'); } init {
     $3.nd = mknode(NULL, NULL, $3.name); 
     $$.nd = mknode($1.nd, $3.nd, "iterator");
 }
-| TK_ID { check_declaration($1.name); } '.' TK_ID { check_atribute($1.name, $4.name); } init {
-    $4.nd = mknode(NULL, NULL, $4.name); 
-    $$.nd = mknode($4.nd, $6.nd, ".");
+| class_call { check_atribute($1.nd->left->token, $1.nd->right->token); } init {
+    $$.nd = mknode($1.nd, $3.nd, ".");
+}
+| class_call '(' params_const ')' { check_method($1.nd->left->token, $1.nd->right->token, param_count); } {
+    $$.nd = mknode($1.nd, $3.nd, "call_method");
+    param_count = 0;
+}
+;
+
+params_const: param_const ',' params_const {
+    param_count++;
+
+}
+| param_const {
+    param_count++;
+}
+| {
+    $$.nd = NULL;
+}
+;
+
+param_const: value {
+    // adicionar para validar o tipo dos parametros se pa
+}
+;
+
+class_call: TK_ID { check_declaration($1.name); } '.' TK_ID {
+    struct node *aux_left = mknode($1.nd, NULL, $1.name); 
+    struct node *aux_right = mknode($4.nd, NULL, $4.name); 
+    $$.nd = mknode(aux_left, aux_right, "call"); 
 }
 ;
 
@@ -636,8 +674,8 @@ void print_symbol_table()
     for (int i = 0; i < count; i++)
     {
         sprintf(aux_line, "%5d", symbol_table[i].line_no);
-        printf("%-25s |%-15s |%-15s |%-15s |%-7s |%-20s|\n", symbol_table[i].id_name, symbol_table[i].data_type,
-               symbol_table[i].type, symbol_table[i].class_name, aux_line, symbol_table[i].file_name);
+        printf("%-25s |%-15s |%-15s |%-15s |%-7s |%-20s| %d\n", symbol_table[i].id_name, symbol_table[i].data_type,
+               symbol_table[i].type, symbol_table[i].class_name, aux_line, symbol_table[i].file_name, symbol_table[i].num_param);
     }
 }
 
@@ -767,6 +805,26 @@ void check_atribute(const char *object, const char *atribute) {
     sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O atributo %s não existe na classe %s\n", countn+1, file_name_current, atribute, class_name_target);
 }
 
+void check_method(const char *object, const char *method, int num_param_call) {
+    int i; 
+    char *class_name_target;
+    for(i = count-1; i >= 0; i--) {
+        if(strcmp(symbol_table[i].id_name, object) == 0) {   
+            class_name_target = strdup(symbol_table[i].data_type);
+            break;
+        }
+    }
+    for(i = count-1; i >= 0; i--) {
+        if((strcmp(symbol_table[i].class_name, class_name_target) == 0) && (strcmp(symbol_table[i].id_name, method) == 0)) {   
+            if (symbol_table[i].num_param != num_param_call) {
+                sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O método %s espera %d parametros e recebeu %d\n", countn+1, file_name_current, method, symbol_table[i].num_param, num_param_call);
+            }
+            return;
+        }
+    }
+    sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O método %s não existe na classe %s\n", countn+1, file_name_current, method, class_name_target);
+}
+
 char *get_type(const char *var){
 	for(int i = 0; i < count; i++) {
 		if(!strcmp(symbol_table[i].id_name, var)) {
@@ -777,14 +835,6 @@ char *get_type(const char *var){
 }
 
 void add(char c) {
-    if(c == 'V'){
-		for(int i = 0; i < 12; i++){
-			if(!strcmp(reserved[i], strdup(yytext))){
-        		sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O nome da Erro na linha \"%s\" é uma palavra reservada!\n", countn+1, file_name_current, yytext);
-				return;
-			}
-		}
-	}
     q=search(yytext);
     if(!q) {
         if(c == 'H') {

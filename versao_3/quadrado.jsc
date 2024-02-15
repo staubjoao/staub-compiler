@@ -3,7 +3,7 @@ forma Quadrado {
     palavra cor;
     inteiro lado;
 
-    inteiro calculaArea() {
+    inteiro calculaArea(inteiro teste) {
         inteiro ladoQuadrado = lado * lado;
         retorno ladoQuadrado;
     }
