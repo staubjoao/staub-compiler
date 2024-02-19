@@ -44,6 +44,8 @@
         char * file_name;
         char * class_name;
         int num_param;
+        int class_scope;
+        int scope;
         int line_no;
     } symbol_table[MAX_SYMBOLS];
 
@@ -80,6 +82,8 @@
 	int label=0;
 	int is_for=0;
     int param_count=0;
+    int class_scope_count=0;
+    int scope_count=0;
     struct param_types *head_params_l = NULL;
     int method_current;
 	char buff[100];
@@ -114,7 +118,7 @@ struct var_name2 {
 program: class {
     class_aux = $1.nd;
 }
-| headers TK_CLASS_DEFINITION_MAIN { add('Z'); } '{' class_body_main '}'  { 
+| headers TK_CLASS_DEFINITION_MAIN { class_scope_count++; add('Z'); } '{' class_body_main '}'  { 
     $2.nd = mknode($5.nd, NULL, "main_class"); 
     $$.nd = mknode($1.nd, $2.nd, "program"); 
     head = $$.nd; 
@@ -140,7 +144,7 @@ class: class_defination '{' class_body '}' {
 }
 ;
 
-class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { add('Z'); } { 
+class_defination: TK_CLASS_DEFINITION TK_CLASS_NAME { class_scope_count++; add('Z'); } { 
     $$.nd = mknode($1.nd, $2.nd, "class"); 
     class_name_current = strdup($2.name);
 }
@@ -170,7 +174,7 @@ class_body_main: method_signature '(' atributs_method ')' '{' body return '}' cl
 ;
 
 
-method_signature: datatype TK_ID { add('F'); } {
+method_signature: datatype TK_ID { scope_count++; add('F'); } {
     $$.nd = mknode(NULL, NULL, $2.name);
     method_current = count-1;
 }
@@ -679,13 +683,13 @@ int main(int argc, char **argv)
 void print_symbol_table()
 {
     printf("\n\nTABELA DE SIMBOLOS:\n\n");
-    printf("%-25s |%-15s |%-15s |%-15s |%-7s |%-20s|\n", "IDENTIFICADOR", "TIPO DE DADO", "TIPO", "CLASSE", "LINHA", "ARQUIVO");
+    printf("%-25s |%-15s |%-15s |%-15s |%-7s | %s|  %s |%-20s\n", "IDENTIFICADOR", "TIPO DE DADO", "TIPO", "CLASSE", "LINHA", "C_S", "S", "ARQUIVO");
     char aux_line[10];
     for (int i = 0; i < count; i++)
     {
         sprintf(aux_line, "%5d", symbol_table[i].line_no);
-        printf("%-25s |%-15s |%-15s |%-15s |%-7s |%-20s| %d\n", symbol_table[i].id_name, symbol_table[i].data_type,
-               symbol_table[i].type, symbol_table[i].class_name, aux_line, symbol_table[i].file_name, symbol_table[i].num_param);
+        printf("%-25s |%-15s |%-15s |%-15s |%-7s |%3d |%3d |%-20s \n", symbol_table[i].id_name, symbol_table[i].data_type,
+               symbol_table[i].type, symbol_table[i].class_name, aux_line, symbol_table[i].class_scope, symbol_table[i].scope, symbol_table[i].file_name);
     }
 }
 
@@ -865,6 +869,8 @@ void add(char c) {
             symbol_table[count].type=strdup("Header");
             symbol_table[count].file_name=strdup(file_name_current);
             symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
             count++;  
         }  
         else if(c == 'K') {
@@ -874,6 +880,8 @@ void add(char c) {
             symbol_table[count].type=strdup("Keyword");   
             symbol_table[count].file_name=strdup(file_name_current);
             symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
             count++;  
         }  else if(c == 'V') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
@@ -882,6 +890,8 @@ void add(char c) {
             symbol_table[count].type=strdup("Variable");   
             symbol_table[count].file_name=strdup(file_name_current);
             symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
             count++;  
         }  else if(c == 'C') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
@@ -890,6 +900,8 @@ void add(char c) {
             symbol_table[count].type=strdup("Constant");   
             symbol_table[count].file_name=strdup(file_name_current);
             symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
             count++;  
         }  else if(c == 'F') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
@@ -899,6 +911,8 @@ void add(char c) {
             symbol_table[count].type=strdup("Function");   
             symbol_table[count].file_name=strdup(file_name_current);
             symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
             count++;  
         }else if(c == 'Z') {
             class_name_current = strdup(yylval.nd_obj.name);
@@ -908,6 +922,8 @@ void add(char c) {
             symbol_table[count].type=strdup("Class");   
             symbol_table[count].file_name=strdup(file_name_current);
             symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
             count++;  
         }else if(c == 'O') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
@@ -916,6 +932,8 @@ void add(char c) {
             symbol_table[count].type=strdup("Object");   
             symbol_table[count].file_name=strdup(file_name_current);
             symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
             count++;  
         }else if(c == 'A') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
@@ -924,6 +942,8 @@ void add(char c) {
             symbol_table[count].type=strdup("Attribute");   
             symbol_table[count].file_name=strdup(file_name_current);
             symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
             count++;  
         }else if(c == 'X') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
@@ -932,6 +952,8 @@ void add(char c) {
             symbol_table[count].type=strdup("Vector");   
             symbol_table[count].file_name=strdup(file_name_current);
             symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
             count++;  
         }else if(c == 'P') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
@@ -940,6 +962,8 @@ void add(char c) {
             symbol_table[count].type=strdup("Parameter");   
             symbol_table[count].file_name=strdup(file_name_current);
             symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
             count++;  
         }else if(c == 'R') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
@@ -949,6 +973,8 @@ void add(char c) {
             symbol_table[count].type=strdup("Return");   
             symbol_table[count].file_name=strdup(file_name_current);
             symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
             count++;  
         }
 
