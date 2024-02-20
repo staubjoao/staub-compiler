@@ -1,6 +1,9 @@
+%x INCLUDE_FILE
 %{
     #include "y.tab.h"
     int countn;
+
+    int push_file(char *);
 %}
 
 %option yylineno
@@ -13,6 +16,25 @@ digit [0-9]
 unary "++"|"--"
 
 %%
+
+"importa" { BEGIN INCLUDE_FILE; }
+
+<INCLUDE_FILE>{alphaMin}*\.jsc  {
+                             {
+                               int c;
+
+                               while ((c = input ()) && c != '\n') ;
+                             }
+
+                             if (!push_file(strdup(yytext)))
+                             {
+                               yyterminate ();
+                             }
+
+                             BEGIN INITIAL;
+                           }
+
+<INCLUDE_FILE>.|\n { fprintf (stderr, "Bad include line is found.\n"); yyterminate (); }
 
 "imprime"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_PRINTF; }
 "leia"                          { strcpy(yylval.nd_obj.name,(yytext)); return TK_SCANF; }
@@ -27,8 +49,6 @@ unary "++"|"--"
 "senao"	                        { strcpy(yylval.nd_obj.name,(yytext)); return TK_ELSE; }
 "forma"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION; }
 "Principal"                     { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION_MAIN; }
-"importa"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE; }
-{alphaMin}*\.jsc                { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE_CLASS; }
 "verdadeiro"                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_TRUE; }
 "falso"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_FALSE; }
 
@@ -57,9 +77,13 @@ unary "++"|"--"
 .	                            { return *yytext; }
 ["].*["]                        { strcpy(yylval.nd_obj.name,(yytext)); return TK_STRING; }
 ['].[']                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_CHARACTER; }
-<<EOF>>                         {yypop_buffer_state(); if(!YY_CURRENT_BUFFER) { yyterminate(); }}
+<<EOF>>                         { yypop_buffer_state(); if(!YY_CURRENT_BUFFER) { yyterminate(); } }
 
 %%
+
+int push_file(char *f) {
+    printf("%s\n", f);
+}
 
 int yywrap() {
     return 1;

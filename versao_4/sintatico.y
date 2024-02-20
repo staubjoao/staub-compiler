@@ -90,37 +90,6 @@
 	char buff[100];
 	char errors[100][100];
 	char icg[50][100];
-
-    YY_BUFFER_STATE prev_buffer = NULL;
-
-    #define MAX_INCLUDE_DEPTH 10
-    char included_files[MAX_INCLUDE_DEPTH][256]; // Tamanho máximo do nome do arquivo é 255 caracteres
-    int include_depth = 0;
-
-    /* Função para incluir um arquivo */
-    void include_file(const char* filename) {
-        if (include_depth >= MAX_INCLUDE_DEPTH) {
-            fprintf(stderr, "Exceeded maximum include depth\n");
-            exit(EXIT_FAILURE);
-        }
-        strcpy(included_files[include_depth], filename);
-        include_depth++;
-    }
-
-    /* Função para desfazer a inclusão de um arquivo */
-    void undo_include() {
-        if (include_depth > 0) {
-            include_depth--;
-        }
-    }
-
-    /* Função para obter o nome do arquivo atual */
-    const char* current_file() {
-        if (include_depth > 0) {
-            return included_files[include_depth - 1];
-        }
-        return NULL;
-    }
 %}
 
 %union {
@@ -146,18 +115,18 @@ struct var_name2 {
 %left <nd_obj> TK_ADD TK_SUBTRACT
 %%
 
-program: class {
-    class_aux = $1.nd;
-}
-| headers TK_CLASS_DEFINITION_MAIN { class_scope_count++; add('Z'); } '{' class_body_main '}'  { 
+program: headers TK_CLASS_DEFINITION_MAIN { class_scope_count++; add('Z'); } '{' class_body_main '}'  { 
     $2.nd = mknode($5.nd, NULL, "main_class"); 
     $$.nd = mknode($1.nd, $2.nd, "program"); 
     princial_bool = 1;
     head = $$.nd; 
 } 
+| class {
+    class_aux = $1.nd;
+}
 ;
 
-headers: include ';' headers { 
+headers: include headers { 
     // $$.nd = mknode($1.nd, $3.nd, "headers");
 } 
 | {
@@ -166,42 +135,11 @@ headers: include ';' headers {
 ;
 
 include: TK_INCLUDE TK_INCLUDE_CLASS {
-    FILE *fp = fopen($2.name, "r");
-    if (fp == NULL) {
-        printf("Error: could not open file %s\n", $2.name);
-        exit(EXIT_FAILURE);
-    }
-
-    /* Inclui o arquivo e atualiza o rastreador de arquivos incluídos */
-    include_file($2.name);
-
-    /* Lógica de processamento do arquivo incluído */
-    yyin = fp;
-    strcpy(file_name_current, $2.name);
-    count_lines = 1;
-    countn = 1;
-
-    struct tree_class_l *class_act = create_tree_class_l(file_name_current);
-    class_act->head = class_aux;
-    if (head_class_l == NULL) {
-        head_class_l = class_act;
-    } else {
-        class_act->next = head_class_l;
-        head_class_l = class_act;
-    }
-    class_aux = NULL;
-
-    yypush_buffer_state(yy_create_buffer(yyin, YY_BUF_SIZE));
-    printf("%s\n", $2.name);
-    yyparse();
-
-    /* Desfaz a inclusão do arquivo e restaura o rastreador de arquivos incluídos */
-    undo_include();
-    fclose(fp);
+    printf("%s %s\n", $1.name, $2.name);
 }
 ;
 
-class: class_defination '{' class_body '}' {
+class: class_defination '{' class_body '}' program {
     $$.nd = mknode($1.nd, $3.nd, "class");
 }
 ;

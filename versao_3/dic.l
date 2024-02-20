@@ -14,6 +14,9 @@ unary "++"|"--"
 
 %%
 
+"importa"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE; }
+{alphaMin}*\.jsc                { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE_CLASS; }
+
 "imprime"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_PRINTF; }
 "leia"                          { strcpy(yylval.nd_obj.name,(yytext)); return TK_SCANF; }
 "inteiro"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_INT; }
@@ -27,8 +30,6 @@ unary "++"|"--"
 "senao"	                        { strcpy(yylval.nd_obj.name,(yytext)); return TK_ELSE; }
 "forma"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION; }
 "Principal"                     { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION_MAIN; }
-"importa"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE; }
-{alphaMin}*\.jsc                { strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE_CLASS; }
 "verdadeiro"                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_TRUE; }
 "falso"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_FALSE; }
 

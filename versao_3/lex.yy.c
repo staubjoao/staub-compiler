@@ -387,16 +387,16 @@ static const flex_int16_t yy_accept[153] =
        21,   21,   39,   37,   26,    0,   40,   29,    0,   22,
        18,    0,    0,   35,    0,   23,   25,   24,   20,   20,
         0,   21,   21,   21,   21,   21,   21,   21,   21,   21,
-       21,   21,   21,   10,   21,   21,   30,   41,    0,    0,
+       21,   21,   21,   12,   21,   21,   30,   41,    0,    0,
         0,    0,   35,   19,   20,   21,   21,   21,   21,   21,
-       21,   21,   21,   21,   21,   21,   21,   21,   15,   36,
+       21,   21,   21,   21,   21,   21,   21,   21,    2,   36,
        19,   20,   21,   21,   21,   21,   21,   21,   21,   21,
 
-        2,   21,   21,   21,   21,   21,   19,   20,   21,   21,
-       21,   17,   12,   21,   21,   21,   21,   21,   11,    7,
+        4,   21,   21,   21,   21,   21,   19,   20,   21,   21,
+       21,   17,   14,   21,   21,   21,   21,   21,   13,    9,
        21,   19,   20,   21,   21,   21,   21,   21,   21,   21,
-       21,   21,   19,   20,   21,    4,   21,   14,    1,    3,
-        6,    8,   21,   19,   20,    5,    9,   21,   13,   21,
+       21,   21,   19,   20,   21,    6,   21,    1,    3,    5,
+        8,   10,   21,   19,   20,    7,   11,   21,   15,   21,
        16,    0
     } ;
 
@@ -874,213 +874,213 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 17 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_PRINTF; }
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 18 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_SCANF; }
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE_CLASS; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 19 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_INT; }
+#line 20 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_PRINTF; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 20 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_FLOAT; }
+#line 21 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_SCANF; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 21 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_CHAR; }
+#line 22 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_INT; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 22 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_STRING; }
+#line 23 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_FLOAT; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 23 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_VOID; }
+#line 24 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_CHAR; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 24 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_RETURN; }
+#line 25 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_STRING; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 25 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_FOR; }
+#line 26 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_VOID; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 26 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_IF; }
+#line 27 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_RETURN; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 27 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_ELSE; }
+#line 28 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_FOR; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 28 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION; }
+#line 29 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_IF; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 29 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION_MAIN; }
+#line 30 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_ELSE; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 30 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE; }
+#line 31 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 31 "dic.l"
-{ strcpy(yylval.nd_obj.name,(yytext)); return TK_INCLUDE_CLASS; }
+#line 32 "dic.l"
+{ strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION_MAIN; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 32 "dic.l"
+#line 33 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_TRUE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 33 "dic.l"
+#line 34 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_FALSE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 35 "dic.l"
+#line 36 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_NUMBER; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 36 "dic.l"
+#line 37 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_NUMBER_FLOAT; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 37 "dic.l"
+#line 38 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_NAME; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 38 "dic.l"
+#line 39 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_ID; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 40 "dic.l"
+#line 41 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_UNARY; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 41 "dic.l"
+#line 42 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_LE; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 42 "dic.l"
+#line 43 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_GE; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 43 "dic.l"
+#line 44 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_EQ; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 44 "dic.l"
+#line 45 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_NE; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 45 "dic.l"
+#line 46 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_GT; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 46 "dic.l"
+#line 47 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_LT; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 47 "dic.l"
+#line 48 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_AND; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 48 "dic.l"
+#line 49 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_OR; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 49 "dic.l"
+#line 50 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_ADD; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 50 "dic.l"
+#line 51 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_SUBTRACT; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 51 "dic.l"
+#line 52 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_DIVIDE; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 52 "dic.l"
+#line 53 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_MULTIPLY; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 53 "dic.l"
+#line 54 "dic.l"
 { ; }
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-#line 54 "dic.l"
+#line 55 "dic.l"
 { ; } 
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 55 "dic.l"
+#line 56 "dic.l"
 { ; }
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-#line 56 "dic.l"
+#line 57 "dic.l"
 { countn++; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 57 "dic.l"
+#line 58 "dic.l"
 { return *yytext; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 58 "dic.l"
+#line 59 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_STRING; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 59 "dic.l"
+#line 60 "dic.l"
 { strcpy(yylval.nd_obj.name,(yytext)); return TK_CHARACTER; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 61 "dic.l"
+#line 62 "dic.l"
 ECHO;
 	YY_BREAK
 #line 1087 "lex.yy.c"
@@ -2100,7 +2100,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 61 "dic.l"
+#line 62 "dic.l"
 
 
 int yywrap() {

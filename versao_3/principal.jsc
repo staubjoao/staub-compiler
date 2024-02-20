@@ -1,6 +1,3 @@
-importa circulo.jsc;
-importa quadrado.jsc;
-
 Principal {
     inteiro principal() {
 
