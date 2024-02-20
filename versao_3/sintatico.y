@@ -731,7 +731,7 @@ void function_check_return(const char *value) {
 	char *function_datatype = get_type(symbol_table[count-1].data_type);
     if(!strcmp(value, "NULL")) {
         printf("\n\nTESTE: %s\n\n", value);
-        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: Falta um retorno\n", countn, file_name_current);
+        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Falta um retorno\n", countn, file_name_current);
         return;
     }
     char *return_datatype = get_type(value);
@@ -742,7 +742,7 @@ void function_check_return(const char *value) {
             return;
         }
 
-        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: Incompatibilidade de tipo de retorno\n", countn, file_name_current);
+        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Incompatibilidade de tipo de retorno\n", countn, file_name_current);
     }
 }
 
@@ -798,7 +798,7 @@ void free_tree_class_l(struct tree_class_l *tree) {
 void check_declaration(const char *c) {    
     q = search(c, class_scope_count, scope_count);
     if(!q) {
-        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: \"%s\" não foi declarada!\n", countn, file_name_current, c);  
+        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: \"%s\" não foi declarada!\n", countn, file_name_current, c);  
     }
 }
 
@@ -806,7 +806,7 @@ void check_declaration_previously(const char *c) {
     q = search(c, class_scope_count, scope_count);
     if(!q) return;
 
-    sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: \"%s\" já foi declarada anteriormente!\n", countn, file_name_current, c);  
+    sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: \"%s\" já foi declarada anteriormente!\n", countn, file_name_current, c);  
 }
 
 void check_atribute(const char *object, const char *atribute) {
@@ -824,7 +824,7 @@ void check_atribute(const char *object, const char *atribute) {
             return;
         }
     }
-    sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O atributo %s não existe na classe %s\n", countn, file_name_current, atribute, class_name_target);
+    sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O atributo %s não existe na classe %s\n", countn, file_name_current, atribute, class_name_target);
 }
 
 void check_method(const char *object, const char *method, int num_param_call, struct param_types *head) {
@@ -839,14 +839,14 @@ void check_method(const char *object, const char *method, int num_param_call, st
     for(i = count-1; i >= 0; i--) {
         if((strcmp(symbol_table[i].class_name, class_name_target) == 0) && (strcmp(symbol_table[i].id_name, method) == 0)) {   
             if (symbol_table[i].num_param != num_param_call) {
-                sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O método %s espera %d parametros e recebeu %d\n", countn, file_name_current, method, symbol_table[i].num_param, num_param_call);
+                sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s espera %d parametros e recebeu %d\n", countn, file_name_current, method, symbol_table[i].num_param, num_param_call);
             }
             int count_paran_index = 1;
             struct param_types *temp = head;
             for(j = i+1; j <= i+num_param_call; j++) {
                 if (temp != NULL) {
                     if((strcmp(symbol_table[j].data_type, temp->type) != 0)) {
-                        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O parametro de número %d, não é do tipo esperado\n", countn, file_name_current, count_paran_index);
+                        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O parametro de número %d, não é do tipo esperado\n", countn, file_name_current, count_paran_index);
                     }
                     temp = temp->next;
                     count_paran_index++;
@@ -855,7 +855,7 @@ void check_method(const char *object, const char *method, int num_param_call, st
             return;
         }
     }
-    sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O método %s não existe na classe %s\n", countn, file_name_current, method, class_name_target);
+    sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s não existe na classe %s\n", countn, file_name_current, method, class_name_target);
 }
 
 char *get_type(const char *var){
@@ -1042,5 +1042,5 @@ void free_l_param(struct param_types **head) {
 }
 
 void yyerror(const char* msg) {
-    fprintf(stderr, "%s\n", msg);
+    fprintf(stderr, "Erro sintático na linha %d, arquivo %s: %s\n", countn, file_name_current, msg);
 }
