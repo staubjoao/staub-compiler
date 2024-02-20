@@ -25,11 +25,12 @@
     void insert_type();
     void printtree(struct node *);
     void printInorder(struct node *);
-    int search(const char *);
+    int search(const char *, int, int);
 	void insert_type();
 	void print_tree(struct node*);
 	void print_inorder(struct node *);
     void check_declaration(const char *);
+    void check_declaration_previously(const char *);
     void check_atribute(const char *, const char *);
     void check_method(const char *, const char *, int, struct param_types *head);
 	void function_check_return(const char *);
@@ -269,7 +270,7 @@ statement_atributes: datatype TK_ID { add('A'); } init  {
 }
 ;
 
-statement: datatype TK_ID { add('V'); } init {
+statement: datatype TK_ID { check_declaration_previously($2.name); add('V'); } init {
     $2.nd = mknode(NULL, NULL, $2.name); 
     int t = check_types($1.name, $4.type);  
     if(t > 0) {
@@ -683,12 +684,12 @@ int main(int argc, char **argv)
 void print_symbol_table()
 {
     printf("\n\nTABELA DE SIMBOLOS:\n\n");
-    printf("%-25s |%-15s |%-15s |%-15s |%-7s | %s|  %s |%-20s\n", "IDENTIFICADOR", "TIPO DE DADO", "TIPO", "CLASSE", "LINHA", "C_S", "S", "ARQUIVO");
+    printf("%-25s |%-20s |%-15s |%-15s |%-7s | %s|  %s |%-20s\n", "IDENTIFICADOR", "TIPO DE DADO", "TIPO", "CLASSE", "LINHA", "C_S", "S", "ARQUIVO");
     char aux_line[10];
     for (int i = 0; i < count; i++)
     {
         sprintf(aux_line, "%5d", symbol_table[i].line_no);
-        printf("%-25s |%-15s |%-15s |%-15s |%-7s |%3d |%3d |%-20s \n", symbol_table[i].id_name, symbol_table[i].data_type,
+        printf("%-25s |%-20s |%-15s |%-15s |%-7s |%3d |%3d |%-20s \n", symbol_table[i].id_name, symbol_table[i].data_type,
                symbol_table[i].type, symbol_table[i].class_name, aux_line, symbol_table[i].class_scope, symbol_table[i].scope, symbol_table[i].file_name);
     }
 }
@@ -730,7 +731,7 @@ void function_check_return(const char *value) {
 	char *function_datatype = get_type(symbol_table[count-1].data_type);
     if(!strcmp(value, "NULL")) {
         printf("\n\nTESTE: %s\n\n", value);
-        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: Falta um retorno\n", countn+1, file_name_current);
+        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: Falta um retorno\n", countn, file_name_current);
         return;
     }
     char *return_datatype = get_type(value);
@@ -741,7 +742,7 @@ void function_check_return(const char *value) {
             return;
         }
 
-        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: Incompatibilidade de tipo de retorno\n", countn+1, file_name_current);
+        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: Incompatibilidade de tipo de retorno\n", countn, file_name_current);
     }
 }
 
@@ -795,10 +796,17 @@ void free_tree_class_l(struct tree_class_l *tree) {
 }
 
 void check_declaration(const char *c) {    
-    q = search(c);    
+    q = search(c, class_scope_count, scope_count);
     if(!q) {
-        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: Variável \"%s\" não foi declarada!\n", countn+1, file_name_current, c);  
+        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: \"%s\" não foi declarada!\n", countn, file_name_current, c);  
     }
+}
+
+void check_declaration_previously(const char *c) {    
+    q = search(c, class_scope_count, scope_count);
+    if(!q) return;
+
+    sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: \"%s\" já foi declarada anteriormente!\n", countn, file_name_current, c);  
 }
 
 void check_atribute(const char *object, const char *atribute) {
@@ -816,7 +824,7 @@ void check_atribute(const char *object, const char *atribute) {
             return;
         }
     }
-    sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O atributo %s não existe na classe %s\n", countn+1, file_name_current, atribute, class_name_target);
+    sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O atributo %s não existe na classe %s\n", countn, file_name_current, atribute, class_name_target);
 }
 
 void check_method(const char *object, const char *method, int num_param_call, struct param_types *head) {
@@ -831,14 +839,14 @@ void check_method(const char *object, const char *method, int num_param_call, st
     for(i = count-1; i >= 0; i--) {
         if((strcmp(symbol_table[i].class_name, class_name_target) == 0) && (strcmp(symbol_table[i].id_name, method) == 0)) {   
             if (symbol_table[i].num_param != num_param_call) {
-                sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O método %s espera %d parametros e recebeu %d\n", countn+1, file_name_current, method, symbol_table[i].num_param, num_param_call);
+                sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O método %s espera %d parametros e recebeu %d\n", countn, file_name_current, method, symbol_table[i].num_param, num_param_call);
             }
             int count_paran_index = 1;
             struct param_types *temp = head;
             for(j = i+1; j <= i+num_param_call; j++) {
                 if (temp != NULL) {
                     if((strcmp(symbol_table[j].data_type, temp->type) != 0)) {
-                        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O parametro de número %d, não é do tipo esperado\n", countn+1, file_name_current, count_paran_index);
+                        sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O parametro de número %d, não é do tipo esperado\n", countn, file_name_current, count_paran_index);
                     }
                     temp = temp->next;
                     count_paran_index++;
@@ -847,7 +855,7 @@ void check_method(const char *object, const char *method, int num_param_call, st
             return;
         }
     }
-    sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O método %s não existe na classe %s\n", countn+1, file_name_current, method, class_name_target);
+    sprintf(errors[sem_errors++], "Erro na linha %d, arquivo %s: O método %s não existe na classe %s\n", countn, file_name_current, method, class_name_target);
 }
 
 char *get_type(const char *var){
@@ -860,7 +868,7 @@ char *get_type(const char *var){
 }
 
 void add(char c) {
-    q=search(yytext);
+    q = search(yytext, class_scope_count, scope_count);
     if(!q) {
         if(c == 'H') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);    
@@ -981,15 +989,23 @@ void add(char c) {
     }
 }
 
-int search(const char *type) { 
-    int i; 
+int search(const char *type, int cl_scope, int f_scope) { 
+    int i, aux_return = 0;
     for(i = count-1; i >= 0; i--) {
-        if(strcmp(symbol_table[i].id_name, type) == 0) {   
-            return -1;
+        if(strcmp(symbol_table[i].id_name, type) == 0 && symbol_table[i].class_scope == cl_scope && strcmp(symbol_table[i].type, "Attribute") == 0) {
+            aux_return = 1;
             break;
         }
     }
-    return 0;
+    if(!aux_return) {
+        for(i = count-1; i >= 0; i--) {
+            if(strcmp(symbol_table[i].id_name, type) == 0 && symbol_table[i].scope == f_scope) {
+                aux_return = 2;
+                break;
+            }
+        } 
+    }
+    return aux_return;
 }
 
 void insert_at_end_l_param(struct param_types **head, char *type) {

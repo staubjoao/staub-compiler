@@ -8,6 +8,7 @@ Principal {
 
         leia("%d", &x);
 
+        palavra cor;
         
         x = 35;
 
@@ -26,10 +27,10 @@ Principal {
             imprime("Teste");
         }
 
-        Circulo circulo;
+        // Circulo circulo;
 
-        circulo.raio = 5.1;
-        circulo.calculaArea(x, 1.1);
+        // circulo.raio = 5.1;
+        // circulo.calculaArea(x, 1.1);
         retorno x;
     }
 }

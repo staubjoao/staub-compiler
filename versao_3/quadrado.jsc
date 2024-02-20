@@ -2,6 +2,7 @@ forma Quadrado {
 
     palavra cor;
     inteiro lado;
+    inteiro ladoQuadrado;
 
     inteiro calculaArea(inteiro teste) {
         inteiro ladoQuadrado = lado * lado;
@@ -9,6 +10,7 @@ forma Quadrado {
     }
 
     inteiro calcularPerimetro() {
+        inteiro ladoQuadrado;   
         inteiro perimetro = lado * 4;
         retorno perimetro;
     }
