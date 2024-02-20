@@ -2,9 +2,8 @@ forma Quadrado {
 
     palavra cor;
     inteiro lado;
-    inteiro ladoQuadrado;
 
-    inteiro calculaArea(inteiro teste) {
+    inteiro calculaArea(inteiro teste, inteiro teste2) {
         inteiro ladoQuadrado = lado * lado;
         retorno ladoQuadrado;
     }

@@ -8,6 +8,8 @@ Principal {
 
         leia("%d", &x);
 
+        inteiro ladoQuadrado;
+
         palavra cor;
         
         x = 35;
@@ -31,6 +33,9 @@ Principal {
 
         // circulo.raio = 5.1;
         // circulo.calculaArea(x, 1.1);
+
+        Quadrado quadrado;
+        quadrado.calculaArea(1, 1);
         retorno x;
     }
 }

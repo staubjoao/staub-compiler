@@ -182,13 +182,13 @@ method_signature: datatype TK_ID { scope_count++; add('F'); } {
 ;
 
 
-atributs_method: parament_method ',' atributs_method {
+atributs_method: parament_method atributs_method {
     $$.nd = mknode($1.nd, NULL, "parameter");
     param_count++;
 
 }
-| parament_method {
-    $$.nd = mknode($1.nd, NULL, "parameter");
+| ',' parament_method {
+    $$.nd = mknode($2.nd, NULL, "parameter");
     param_count++;
 }
 | {
@@ -367,11 +367,11 @@ statement: datatype TK_ID { check_declaration_previously($2.name); add('V'); } i
 }
 ;
 
-params_const: param_const ',' params_const {
+params_const: param_const params_const {
     param_count++;
 
 }
-| param_const {
+| ',' param_const {
     param_count++;
 }
 | {
