@@ -34,7 +34,7 @@
     void check_atribute(const char *, const char *);
     void check_method(const char *, const char *, int, struct param_types *head);
 	void function_check_return(const char *);
-	int check_types(const char *, const char *);
+	void check_types(const char *, const char *);
 	char *get_type(const char *);
 	struct node* mknode(struct node *left, struct node *right, const char *token);
 
@@ -270,36 +270,8 @@ statement_atributes: datatype TK_ID { add('A'); } init  {
 
 statement: datatype TK_ID { check_declaration_previously($2.name); add('V'); } init {
     $2.nd = mknode(NULL, NULL, $2.name); 
-    int t = check_types($1.name, $4.type);  
-    if(t > 0) {
-        if(t == 1) {    
-            struct node *temp = mknode(NULL, $4.nd, "decimal_para_inteiro");
-            $$.nd = mknode($2.nd, temp, "declaration");   
-        }   
-        else if(t == 2) {
-            struct node *temp = mknode(NULL, $4.nd, "inteiro_para_decimal");
-            $$.nd = mknode($2.nd, temp, "declaration");   
-        }   
-        else if(t == 3) {    
-            struct node *temp = mknode(NULL, $4.nd, "caracter_para_inteiro");
-            $$.nd = mknode($2.nd, temp, "declaration");   
-        }   
-        else if(t == 4) {    
-            struct node *temp = mknode(NULL, $4.nd, "inteiro_para_caracter");
-            $$.nd = mknode($2.nd, temp, "declaration");   
-        }   
-        else if(t == 5) {    
-            struct node *temp = mknode(NULL, $4.nd, "caracter_para_decimal");
-            $$.nd = mknode($2.nd, temp, "declaration");   
-        }   
-        else {   
-            struct node *temp = mknode(NULL, $4.nd, "decimal_para_caracter");
-            $$.nd = mknode($2.nd, temp, "declaration");   
-        }
-    }
-    else {   
-        $$.nd = mknode($2.nd, $4.nd, "declaration");  
-    } 
+    check_types($1.name, $4.type);  
+    $$.nd = mknode($2.nd, $4.nd, "declaration");  
 }
 | TK_ID { check_declaration($1.name); } '=' expression  {
     $1.nd = mknode(NULL, NULL, $1.name); 
@@ -597,6 +569,12 @@ value: TK_NUMBER {
     check_declaration($1.name); 
     $$.nd = mknode(NULL, NULL, $1.name); 
 }
+| TK_STRING {
+    strcpy($$.name, $1.name); 
+    sprintf($$.type, "%s", "palavra");
+    $$.nd = mknode(NULL, NULL, $1.name); 
+    add('C'); 
+}
 ;
 
 return: TK_RETURN { add('R'); } value ';' { 
@@ -749,26 +727,11 @@ void function_check_return(const char *value) {
     }
 }
 
-int check_types(const char *type1, const char *type2){
-	if(!strcmp(type2, "null"))
-		return -1;
+void check_types(const char *type1, const char *type2){
+	if(!strcmp(type1, type2) || !strcmp(type2, "null"))
+		return;
 
-	if(!strcmp(type1, type2))
-		return 0;
-
-	if(!strcmp(type1, "inteiro") && !strcmp(type2, "decimal"))
-		return 1;
-	if(!strcmp(type1, "decimal") && !strcmp(type2, "inteiro"))
-		return 2;
-	if(!strcmp(type1, "inteiro") && !strcmp(type2, "caracter"))
-		return 3;
-	if(!strcmp(type1, "caracter") && !strcmp(type2, "inteiro"))
-		return 4;
-	if(!strcmp(type1, "decimal") && !strcmp(type2, "caracter"))
-		return 5;
-	if(!strcmp(type1, "caracter") && !strcmp(type2, "decimal"))
-		return 6;
-    return -1;
+    sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Incompatibilidade de tipo na atribuição\n", countn[count_file_name], file_name_current[count_file_name]);
 }
 
 struct tree_class_l* create_tree_class_l(char *file_name) {
