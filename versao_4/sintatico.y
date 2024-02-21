@@ -30,11 +30,13 @@
 	void print_tree(struct node*);
 	void print_inorder(struct node *);
     void check_declaration(const char *);
+    void check_class_declaration(const char *);
     void check_declaration_previously(const char *);
     void check_atribute(const char *, const char *);
     void check_method(const char *, const char *, int, struct param_types *head);
 	void function_check_return(const char *);
 	void check_types(const char *, const char *);
+	void check_types_atributes(const char *, const char *);
 	char *get_type(const char *);
 	struct node* mknode(struct node *left, struct node *right, const char *token);
 
@@ -249,7 +251,7 @@ else: TK_ELSE { add('K'); } '{' body '}' {
 }
 ;
 
-statement_class: TK_CLASS_NAME { insert_type(); } TK_ID { add('O'); }
+statement_class: TK_CLASS_NAME { check_class_declaration($1.name); insert_type(); } TK_ID { add('O'); }
 ;
 
 condition: value relop value {
@@ -326,6 +328,7 @@ statement: datatype TK_ID { check_declaration_previously($2.name); add('V'); } i
     $$.nd = mknode($1.nd, $3.nd, "iterator");
 }
 | class_call { check_atribute($1.nd->left->token, $1.nd->right->token); } init {
+    check_types_atributes($1.nd->right->token, $3.type);  
     $$.nd = mknode($1.nd, $3.nd, ".");
 }
 | class_call '(' params_const ')' { 
@@ -734,6 +737,23 @@ void check_types(const char *type1, const char *type2){
     sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Incompatibilidade de tipo na atribuição\n", countn[count_file_name], file_name_current[count_file_name]);
 }
 
+void check_types_atributes(const char *token, const char *type2){
+    int i;
+    char *type1;
+	for(i = count-1; i >= 0; i--) {
+        if(!strcmp(symbol_table[i].id_name, token)) {
+            type1=strdup(symbol_table[i].data_type);            
+            break;
+        }
+    }
+    if(!strcmp(type1, type2) || !strcmp(type2, "null"))
+		return;
+
+    printf("%s %s\n", type1, type2);
+
+    sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Incompatibilidade de tipo na atribuição\n", countn[count_file_name], file_name_current[count_file_name]);
+}
+
 struct tree_class_l* create_tree_class_l(char *file_name) {
     struct tree_class_l *new_tree = (struct tree_class_l*)malloc(sizeof(struct tree_class_l));
     if (new_tree == NULL) {
@@ -765,6 +785,19 @@ void check_declaration(const char *c) {
     q = search(c, class_scope_count, scope_count);
     if(!q) {
         sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: \"%s\" não foi declarada!\n", countn[count_file_name], file_name_current[count_file_name], c);  
+    }
+}
+
+void check_class_declaration(const char *c) {
+    int i, q = 0;
+    for(i = count-1; i >= 0; i--) {
+        if(!strcmp(symbol_table[i].id_name, c)) {
+            q = 1;
+            break;
+        }
+    }
+    if(!q) {
+        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: A classe \"%s\" não foi declarada!\n", countn[count_file_name], file_name_current[count_file_name], c);  
     }
 }
 
