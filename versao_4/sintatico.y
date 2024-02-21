@@ -65,14 +65,14 @@
         struct tree_class_l *next;
     };
 
-    char file_name_current[MAX_FILE_NAME_LEN];
+    int count_file_name;
+    char file_name_current[2][MAX_FILE_NAME_LEN];
     char *class_name_current;
     int count=0;
-    int count_lines;
     int q;
 	char type[10];
     char *function_return;
-    extern int countn;
+    extern int countn[2];
 	struct node *head;
 	struct node *class_aux;
     struct tree_class_l *head_class_l = NULL;
@@ -108,16 +108,15 @@ struct var_name2 {
 }
 %token TK_VOID
 %token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_INCLUDE_CLASS TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_STRING TK_CHARACTER
-%type <nd_obj> headers include program class_defination class_atributes class_body class_body_main class method_signature statement_atributes 
+%type <nd_obj> program class_defination class_atributes class_body class_body_main class method_signature statement_atributes 
 %type <nd_obj> datatype else body body_statement statement_class statement condition return relop atributs_method parament_method class_call params_const param_const
 %type <nd_obj2> init value expression
 %left <nd_obj> TK_MULTIPLY TK_DIVIDE
 %left <nd_obj> TK_ADD TK_SUBTRACT
 %%
 
-program: headers TK_CLASS_DEFINITION_MAIN { class_scope_count++; add('Z'); } '{' class_body_main '}'  { 
-    $2.nd = mknode($5.nd, NULL, "main_class"); 
-    $$.nd = mknode($1.nd, $2.nd, "program"); 
+program: TK_CLASS_DEFINITION_MAIN { class_scope_count++; add('Z'); } '{' class_body_main '}'  { 
+    $$.nd = mknode($1.nd, $4.nd, "program"); 
     princial_bool = 1;
     head = $$.nd; 
 } 
@@ -126,7 +125,7 @@ program: headers TK_CLASS_DEFINITION_MAIN { class_scope_count++; add('Z'); } '{'
 }
 ;
 
-headers: include headers { 
+/* headers: include headers { 
     // $$.nd = mknode($1.nd, $3.nd, "headers");
 } 
 | {
@@ -137,7 +136,7 @@ headers: include headers {
 include: TK_INCLUDE TK_INCLUDE_CLASS {
     printf("%s %s\n", $1.name, $2.name);
 }
-;
+; */
 
 class: class_defination '{' class_body '}' program {
     $$.nd = mknode($1.nd, $3.nd, "class");
@@ -618,12 +617,12 @@ int main(int argc, char **argv)
 {
     int i;
 
+    count_file_name = 0;
     if(argc >= 2) {
         for (i = 1; i < argc; i++) {
-            strcpy(file_name_current, argv[i]);
+            strcpy(file_name_current[count_file_name], argv[i]);
             FILE *fp = fopen(argv[i], "r");
-            count_lines = 1;
-            countn = 1;
+            countn[count_file_name] = 1;
             if (fp == NULL) {
                 printf("Error: could not open file %s\n", argv[i]);
                 return 1;
@@ -688,12 +687,12 @@ int main(int argc, char **argv)
 void print_symbol_table()
 {
     printf("\n\nTABELA DE SIMBOLOS:\n\n");
-    printf("%-25s |%-20s |%-15s |%-15s |%-7s | %s|  %s |%-20s\n", "IDENTIFICADOR", "TIPO DE DADO", "TIPO", "CLASSE", "LINHA", "C_S", "S", "ARQUIVO");
+    printf("%-25s |%-25s |%-15s |%-15s |%-7s | %s|  %s |%-20s\n", "IDENTIFICADOR", "TIPO DE DADO", "TIPO", "CLASSE", "LINHA", "C_S", "S", "ARQUIVO");
     char aux_line[10];
     for (int i = 0; i < count; i++)
     {
         sprintf(aux_line, "%5d", symbol_table[i].line_no);
-        printf("%-25s |%-20s |%-15s |%-15s |%-7s |%3d |%3d |%-20s \n", symbol_table[i].id_name, symbol_table[i].data_type,
+        printf("%-25s |%-25s |%-15s |%-15s |%-7s |%3d |%3d |%-20s \n", symbol_table[i].id_name, symbol_table[i].data_type,
                symbol_table[i].type, symbol_table[i].class_name, aux_line, symbol_table[i].class_scope, symbol_table[i].scope, symbol_table[i].file_name);
     }
 }
@@ -735,7 +734,7 @@ void function_check_return(const char *value) {
 	char *function_datatype = get_type(symbol_table[count-1].data_type);
     if(!strcmp(value, "NULL")) {
         printf("\n\nTESTE: %s\n\n", value);
-        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Falta um retorno\n", countn, file_name_current);
+        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Falta um retorno\n", countn[count_file_name], file_name_current[count_file_name]);
         return;
     }
     char *return_datatype = get_type(value);
@@ -746,7 +745,7 @@ void function_check_return(const char *value) {
             return;
         }
 
-        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Incompatibilidade de tipo de retorno\n", countn, file_name_current);
+        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Incompatibilidade de tipo de retorno\n", countn[count_file_name], file_name_current[count_file_name]);
     }
 }
 
@@ -802,7 +801,7 @@ void free_tree_class_l(struct tree_class_l *tree) {
 void check_declaration(const char *c) {    
     q = search(c, class_scope_count, scope_count);
     if(!q) {
-        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: \"%s\" não foi declarada!\n", countn, file_name_current, c);  
+        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: \"%s\" não foi declarada!\n", countn[count_file_name], file_name_current[count_file_name], c);  
     }
 }
 
@@ -810,7 +809,7 @@ void check_declaration_previously(const char *c) {
     q = search(c, class_scope_count, scope_count);
     if(!q) return;
 
-    sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: \"%s\" já foi declarada anteriormente!\n", countn, file_name_current, c);  
+    sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: \"%s\" já foi declarada anteriormente!\n", countn[count_file_name], file_name_current[count_file_name], c);  
 }
 
 void check_atribute(const char *object, const char *atribute) {
@@ -828,7 +827,7 @@ void check_atribute(const char *object, const char *atribute) {
             return;
         }
     }
-    sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O atributo %s não existe na classe %s\n", countn, file_name_current, atribute, class_name_target);
+    sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O atributo %s não existe na classe %s\n", countn[count_file_name], file_name_current[count_file_name], atribute, class_name_target);
 }
 
 void check_method(const char *object, const char *method, int num_param_call, struct param_types *head) {
@@ -843,14 +842,14 @@ void check_method(const char *object, const char *method, int num_param_call, st
     for(i = count-1; i >= 0; i--) {
         if((strcmp(symbol_table[i].class_name, class_name_target) == 0) && (strcmp(symbol_table[i].id_name, method) == 0)) {   
             if (symbol_table[i].num_param != num_param_call) {
-                sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s espera %d parametros e recebeu %d\n", countn, file_name_current, method, symbol_table[i].num_param, num_param_call);
+                sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s espera %d parametros e recebeu %d\n", countn[count_file_name], file_name_current[count_file_name], method, symbol_table[i].num_param, num_param_call);
             }
             int count_paran_index = 1;
             struct param_types *temp = head;
             for(j = i+1; j <= i+num_param_call; j++) {
                 if (temp != NULL) {
                     if((strcmp(symbol_table[j].data_type, temp->type) != 0)) {
-                        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O parametro de número %d, não é do tipo esperado\n", countn, file_name_current, count_paran_index);
+                        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O parametro de número %d, não é do tipo esperado\n", countn[count_file_name], file_name_current[count_file_name], count_paran_index);
                     }
                     temp = temp->next;
                     count_paran_index++;
@@ -859,7 +858,7 @@ void check_method(const char *object, const char *method, int num_param_call, st
             return;
         }
     }
-    sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s não existe na classe %s\n", countn, file_name_current, method, class_name_target);
+    sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s não existe na classe %s\n", countn[count_file_name], file_name_current[count_file_name], method, class_name_target);
 }
 
 char *get_type(const char *var){
@@ -877,9 +876,9 @@ void add(char c) {
         if(c == 'H') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);    
             symbol_table[count].data_type=strdup(yylval.nd_obj.name);     
-            symbol_table[count].line_no=countn;    
+            symbol_table[count].line_no=countn[count_file_name];    
             symbol_table[count].type=strdup("Header");
-            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
@@ -888,9 +887,9 @@ void add(char c) {
         else if(c == 'K') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup("N/A");
-            symbol_table[count].line_no=countn;
+            symbol_table[count].line_no=countn[count_file_name];
             symbol_table[count].type=strdup("Keyword");   
-            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
@@ -898,9 +897,9 @@ void add(char c) {
         }  else if(c == 'V') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
-            symbol_table[count].line_no=countn;
+            symbol_table[count].line_no=countn[count_file_name];
             symbol_table[count].type=strdup("Variable");   
-            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
@@ -908,9 +907,9 @@ void add(char c) {
         }  else if(c == 'C') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup("CONST");
-            symbol_table[count].line_no=countn;
+            symbol_table[count].line_no=countn[count_file_name];
             symbol_table[count].type=strdup("Constant");   
-            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
@@ -919,9 +918,9 @@ void add(char c) {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
             function_return=strdup(yylval.nd_obj.name);
-            symbol_table[count].line_no=countn;
+            symbol_table[count].line_no=countn[count_file_name];
             symbol_table[count].type=strdup("Function");   
-            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
@@ -930,9 +929,9 @@ void add(char c) {
             class_name_current = strdup(yylval.nd_obj.name);
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(yylval.nd_obj.name);
-            symbol_table[count].line_no=countn;
+            symbol_table[count].line_no=countn[count_file_name];
             symbol_table[count].type=strdup("Class");   
-            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
@@ -940,9 +939,9 @@ void add(char c) {
         }else if(c == 'O') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
-            symbol_table[count].line_no=countn;
+            symbol_table[count].line_no=countn[count_file_name];
             symbol_table[count].type=strdup("Object");   
-            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
@@ -950,9 +949,9 @@ void add(char c) {
         }else if(c == 'A') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
-            symbol_table[count].line_no=countn;
+            symbol_table[count].line_no=countn[count_file_name];
             symbol_table[count].type=strdup("Attribute");   
-            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
@@ -960,9 +959,9 @@ void add(char c) {
         }else if(c == 'X') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
-            symbol_table[count].line_no=countn;
+            symbol_table[count].line_no=countn[count_file_name];
             symbol_table[count].type=strdup("Vector");   
-            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
@@ -970,9 +969,9 @@ void add(char c) {
         }else if(c == 'P') {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(type);
-            symbol_table[count].line_no=countn;
+            symbol_table[count].line_no=countn[count_file_name];
             symbol_table[count].type=strdup("Parameter");   
-            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
@@ -981,9 +980,9 @@ void add(char c) {
             symbol_table[count].id_name=strdup(yylval.nd_obj.name);
             symbol_table[count].data_type=strdup(function_return);
             function_return = NULL;
-            symbol_table[count].line_no=countn;
+            symbol_table[count].line_no=countn[count_file_name];
             symbol_table[count].type=strdup("Return");   
-            symbol_table[count].file_name=strdup(file_name_current);
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
@@ -1046,5 +1045,5 @@ void free_l_param(struct param_types **head) {
 }
 
 void yyerror(const char* msg) {
-    fprintf(stderr, "Erro sintático na linha %d, arquivo %s: %s   %s\n", countn, file_name_current, msg, yytext);
+    fprintf(stderr, "Erro sintático na linha %d, arquivo %s: %s   %s\n", countn[count_file_name], file_name_current[count_file_name], msg, yytext);
 }

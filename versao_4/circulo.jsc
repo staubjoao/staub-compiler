@@ -5,9 +5,8 @@ forma Circulo {
     decimal pi = 3.14;
 
     decimal calculaArea(inteiro teste, decimal teste2) {
-        decimal area;
         decimal raioQuadrado = raio * raio;
-        area = pi * raioQuadrado;
+        decimal area = pi * raioQuadrado;
         retorno area;
     }
 
