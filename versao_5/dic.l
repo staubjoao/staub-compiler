@@ -90,12 +90,15 @@ importa                         BEGIN(INCLUDE_FILE);
                                   if(!YY_CURRENT_BUFFER) { 
                                     yyterminate(); 
                                   }
-                                  printf("teste: %s\n", file_name_current[count_file_name]);
                                   if (!princial_bool) {
                                     struct tree_class_l *class_act = create_tree_class_l(file_name_current[count_file_name]);
-                                    class_act->next = head_class_l;
-                                    class_act->head = NULL;
-                                    head_class_l = class_act;
+                                    if(head_class_l == NULL) {
+                                      class_act->next = NULL;
+                                      head_class_l = class_act;
+                                    }else {
+                                      class_act->next = head_class_l;
+                                      head_class_l = class_act;
+                                    }
                                   }
                                   count_file_name--; 
                                 }

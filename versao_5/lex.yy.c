@@ -1108,22 +1108,25 @@ case YY_STATE_EOF(INCLUDE_FILE):
                                   if(!YY_CURRENT_BUFFER) { 
                                     yyterminate(); 
                                   }
-                                  printf("teste: %s\n", file_name_current[count_file_name]);
                                   if (!princial_bool) {
                                     struct tree_class_l *class_act = create_tree_class_l(file_name_current[count_file_name]);
-                                    class_act->next = head_class_l;
-                                    class_act->head = NULL;
-                                    head_class_l = class_act;
+                                    if(head_class_l == NULL) {
+                                      class_act->next = NULL;
+                                      head_class_l = class_act;
+                                    }else {
+                                      class_act->next = head_class_l;
+                                      head_class_l = class_act;
+                                    }
                                   }
                                   count_file_name--; 
                                 }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 103 "dic.l"
+#line 106 "dic.l"
 ECHO;
 	YY_BREAK
-#line 1127 "lex.yy.c"
+#line 1130 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2138,7 +2141,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 103 "dic.l"
+#line 106 "dic.l"
 
 
 struct tree_class_l *create_tree_class_l(char *file_name)

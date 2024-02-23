@@ -7,11 +7,7 @@ forma Circulo {
     decimal calculaArea(inteiro teste, decimal teste2) {
         decimal raioQuadrado = raio * raio;
         decimal area = pi * raioQuadrado;
-        retorno 1.1;
+        retorno area;
     }
 
-    decimal calcularCircuferencia() {
-        decimal circuferencia = 2 * raio * pi;
-        retorno circuferencia;
-    }
 }

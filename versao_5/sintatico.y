@@ -37,6 +37,7 @@
 	void check_types(const char *, const char *);
 	void check_types_atributes(const char *, const char *);
 	char *get_type(const char *);
+	char *get_type_function(const char *, int scope);
 	struct node* mknode(struct node *left, struct node *right, const char *token);
     void insert_l_class(struct tree_class_l *head_l, struct node *head);
 
@@ -539,19 +540,19 @@ value: TK_NUMBER {
     strcpy($$.name, $1.name); 
     sprintf($$.type, "%s", "inteiro");
     $$.nd = mknode(NULL, NULL, $1.name); 
-    add('C'); 
+    // add('C'); 
 }
 | TK_NUMBER_FLOAT { 
     strcpy($$.name, $1.name); 
     sprintf($$.type, "%s", "decimal");
     $$.nd = mknode(NULL, NULL, $1.name); 
-    add('C'); 
+    // add('C'); 
 }
 | TK_CHARACTER { 
     strcpy($$.name, $1.name); 
     sprintf($$.type, "%s", "caracter");
     $$.nd = mknode(NULL, NULL, $1.name); 
-    add('C'); 
+    // add('C'); 
 }
 | TK_ID {
     strcpy($$.name, $1.name); 
@@ -568,12 +569,12 @@ value: TK_NUMBER {
     strcpy($$.name, $1.name); 
     sprintf($$.type, "%s", "palavra");
     $$.nd = mknode(NULL, NULL, $1.name); 
-    add('C'); 
+    // add('C'); 
 }
 ;
 
 return: TK_RETURN { add('R'); } value ';' { 
-    function_check_return($3.name); 
+    function_check_return($3.type); 
     $1.nd = mknode(NULL, NULL, "return"); 
     $$.nd = mknode($1.nd, $3.nd, "RETURN"); 
 }
@@ -697,20 +698,9 @@ void insert_type() {
 }
 
 void function_check_return(const char *value) {
-	char *function_datatype = get_type(symbol_table[count-1].data_type);
-    if(!strcmp(value, "NULL")) {
-        printf("\n\nTESTE: %s\n\n", value);
-        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Falta um retorno\n", countn[count_file_name], file_name_current[count_file_name]);
-        return;
-    }
+	char *function_datatype = get_type_function(symbol_table[count-1].data_type, symbol_table[count-1].class_scope);
     char *return_datatype = get_type(value);
-
-    if(function_datatype != NULL && return_datatype != NULL) {
-
-        if (return_datatype == NULL || (!strcmp(function_datatype, "inteiro") && !strcmp(return_datatype, "CONST")) || !strcmp(function_datatype, return_datatype)) {
-            return;
-        }
-
+    if(strcmp(value, function_datatype)) {
         sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Incompatibilidade de tipo de retorno\n", countn[count_file_name], file_name_current[count_file_name]);
     }
 }
@@ -823,6 +813,17 @@ char *get_type(const char *var){
 	}
     return NULL;
 }
+
+char *get_type_function(const char *var, int scope){
+	for(int i = 0; i < count; i++) {
+		if(!strcmp(symbol_table[i].id_name, var) && scope == symbol_table[i].class_scope) {
+			return symbol_table[i].data_type;
+		}
+	}
+    return NULL;
+}
+
+
 
 void add(char c) {
     q = search(yytext, class_scope_count, scope_count);
