@@ -1,0 +1,17 @@
+forma Circulo {
+
+    palavra cor;
+    decimal raio;
+    decimal pi = 3.14;
+
+    decimal calculaArea(inteiro teste, decimal teste2) {
+        decimal raioQuadrado = raio * raio;
+        decimal area = pi * raioQuadrado;
+        retorno 1.1;
+    }
+
+    decimal calcularCircuferencia() {
+        decimal circuferencia = 2 * raio * pi;
+        retorno circuferencia;
+    }
+}
