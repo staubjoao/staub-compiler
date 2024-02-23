@@ -66,30 +66,31 @@ extern int yydebug;
     TK_IF = 267,                   /* TK_IF  */
     TK_ELSE = 268,                 /* TK_ELSE  */
     TK_CLASS_DEFINITION = 269,     /* TK_CLASS_DEFINITION  */
-    TK_CLASS_DEFINITION_MAIN = 270, /* TK_CLASS_DEFINITION_MAIN  */
-    TK_INCLUDE = 271,              /* TK_INCLUDE  */
-    TK_INCLUDE_CLASS = 272,        /* TK_INCLUDE_CLASS  */
-    TK_TRUE = 273,                 /* TK_TRUE  */
-    TK_FALSE = 274,                /* TK_FALSE  */
-    TK_NUMBER = 275,               /* TK_NUMBER  */
-    TK_NUMBER_FLOAT = 276,         /* TK_NUMBER_FLOAT  */
-    TK_ID = 277,                   /* TK_ID  */
-    TK_CLASS_NAME = 278,           /* TK_CLASS_NAME  */
-    TK_UNARY = 279,                /* TK_UNARY  */
-    TK_LE = 280,                   /* TK_LE  */
-    TK_GE = 281,                   /* TK_GE  */
-    TK_EQ = 282,                   /* TK_EQ  */
-    TK_NE = 283,                   /* TK_NE  */
-    TK_GT = 284,                   /* TK_GT  */
-    TK_LT = 285,                   /* TK_LT  */
-    TK_AND = 286,                  /* TK_AND  */
-    TK_OR = 287,                   /* TK_OR  */
-    TK_STRING = 288,               /* TK_STRING  */
-    TK_CHARACTER = 289,            /* TK_CHARACTER  */
-    TK_MULTIPLY = 290,             /* TK_MULTIPLY  */
-    TK_DIVIDE = 291,               /* TK_DIVIDE  */
-    TK_ADD = 292,                  /* TK_ADD  */
-    TK_SUBTRACT = 293              /* TK_SUBTRACT  */
+    TK_FUNC_DEFINITION_MAIN = 270, /* TK_FUNC_DEFINITION_MAIN  */
+    TK_CLASS_DEFINITION_MAIN = 271, /* TK_CLASS_DEFINITION_MAIN  */
+    TK_INCLUDE = 272,              /* TK_INCLUDE  */
+    TK_INCLUDE_CLASS = 273,        /* TK_INCLUDE_CLASS  */
+    TK_TRUE = 274,                 /* TK_TRUE  */
+    TK_FALSE = 275,                /* TK_FALSE  */
+    TK_NUMBER = 276,               /* TK_NUMBER  */
+    TK_NUMBER_FLOAT = 277,         /* TK_NUMBER_FLOAT  */
+    TK_ID = 278,                   /* TK_ID  */
+    TK_CLASS_NAME = 279,           /* TK_CLASS_NAME  */
+    TK_UNARY = 280,                /* TK_UNARY  */
+    TK_LE = 281,                   /* TK_LE  */
+    TK_GE = 282,                   /* TK_GE  */
+    TK_EQ = 283,                   /* TK_EQ  */
+    TK_NE = 284,                   /* TK_NE  */
+    TK_GT = 285,                   /* TK_GT  */
+    TK_LT = 286,                   /* TK_LT  */
+    TK_AND = 287,                  /* TK_AND  */
+    TK_OR = 288,                   /* TK_OR  */
+    TK_STRING = 289,               /* TK_STRING  */
+    TK_CHARACTER = 290,            /* TK_CHARACTER  */
+    TK_MULTIPLY = 291,             /* TK_MULTIPLY  */
+    TK_DIVIDE = 292,               /* TK_DIVIDE  */
+    TK_ADD = 293,                  /* TK_ADD  */
+    TK_SUBTRACT = 294              /* TK_SUBTRACT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -110,36 +111,37 @@ extern int yydebug;
 #define TK_IF 267
 #define TK_ELSE 268
 #define TK_CLASS_DEFINITION 269
-#define TK_CLASS_DEFINITION_MAIN 270
-#define TK_INCLUDE 271
-#define TK_INCLUDE_CLASS 272
-#define TK_TRUE 273
-#define TK_FALSE 274
-#define TK_NUMBER 275
-#define TK_NUMBER_FLOAT 276
-#define TK_ID 277
-#define TK_CLASS_NAME 278
-#define TK_UNARY 279
-#define TK_LE 280
-#define TK_GE 281
-#define TK_EQ 282
-#define TK_NE 283
-#define TK_GT 284
-#define TK_LT 285
-#define TK_AND 286
-#define TK_OR 287
-#define TK_STRING 288
-#define TK_CHARACTER 289
-#define TK_MULTIPLY 290
-#define TK_DIVIDE 291
-#define TK_ADD 292
-#define TK_SUBTRACT 293
+#define TK_FUNC_DEFINITION_MAIN 270
+#define TK_CLASS_DEFINITION_MAIN 271
+#define TK_INCLUDE 272
+#define TK_INCLUDE_CLASS 273
+#define TK_TRUE 274
+#define TK_FALSE 275
+#define TK_NUMBER 276
+#define TK_NUMBER_FLOAT 277
+#define TK_ID 278
+#define TK_CLASS_NAME 279
+#define TK_UNARY 280
+#define TK_LE 281
+#define TK_GE 282
+#define TK_EQ 283
+#define TK_NE 284
+#define TK_GT 285
+#define TK_LT 286
+#define TK_AND 287
+#define TK_OR 288
+#define TK_STRING 289
+#define TK_CHARACTER 290
+#define TK_MULTIPLY 291
+#define TK_DIVIDE 292
+#define TK_ADD 293
+#define TK_SUBTRACT 294
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 84 "sintatico.y"
+#line 83 "sintatico.y"
 
 
 struct var_name { 
@@ -154,7 +156,7 @@ struct var_name2 {
 } nd_obj2; 
 
 
-#line 158 "y.tab.h"
+#line 160 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

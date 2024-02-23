@@ -44,7 +44,6 @@ importa                         BEGIN(INCLUDE_FILE);
                                   exit(1);
                                 }
 
-
 "imprime"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_PRINTF; }
 "leia"                          { strcpy(yylval.nd_obj.name,(yytext)); return TK_SCANF; }
 "inteiro"                       { strcpy(yylval.nd_obj.name,(yytext)); return TK_TYPE_INT; }
@@ -58,6 +57,7 @@ importa                         BEGIN(INCLUDE_FILE);
 "senao"	                        { strcpy(yylval.nd_obj.name,(yytext)); return TK_ELSE; }
 "forma"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION; }
 "Principal"                     { strcpy(yylval.nd_obj.name,(yytext)); return TK_CLASS_DEFINITION_MAIN; }
+"principal"                     { strcpy(yylval.nd_obj.name,(yytext)); return TK_FUNC_DEFINITION_MAIN; }
 "verdadeiro"                    { strcpy(yylval.nd_obj.name,(yytext)); return TK_TRUE; }
 "falso"                         { strcpy(yylval.nd_obj.name,(yytext)); return TK_FALSE; }
 
@@ -92,13 +92,8 @@ importa                         BEGIN(INCLUDE_FILE);
                                   }
                                   if (!princial_bool) {
                                     struct tree_class_l *class_act = create_tree_class_l(file_name_current[count_file_name]);
-                                    if(head_class_l == NULL) {
-                                      class_act->next = NULL;
-                                      head_class_l = class_act;
-                                    }else {
-                                      class_act->next = head_class_l;
-                                      head_class_l = class_act;
-                                    }
+                                    class_act->next = head_class_l;
+                                    head_class_l = class_act;
                                   }
                                   count_file_name--; 
                                 }

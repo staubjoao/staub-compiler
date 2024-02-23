@@ -39,7 +39,6 @@
 	char *get_type(const char *);
 	char *get_type_function(const char *, int scope);
 	struct node* mknode(struct node *left, struct node *right, const char *token);
-    void insert_l_class(struct tree_class_l *head_l, struct node *head);
 
     struct dataType {
         char * id_name;
@@ -65,7 +64,7 @@
 	char type[10];
     char *function_return;
     extern int countn[2];
-	struct node *head;
+	struct node *head = NULL;
 	int sem_errors=0;
 	int ic_idx=0;
 	int temp_var=0;
@@ -96,7 +95,7 @@ struct var_name2 {
 
 }
 %token TK_VOID
-%token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_INCLUDE_CLASS TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_STRING TK_CHARACTER
+%token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_FUNC_DEFINITION_MAIN TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_INCLUDE_CLASS TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_STRING TK_CHARACTER
 %type <nd_obj> program class_defination class_atributes class_body class_body_main class method_signature statement_atributes 
 %type <nd_obj> datatype else body body_statement statement_class statement condition return relop atributs_method parament_method class_call params_const param_const
 %type <nd_obj2> init value expression
@@ -159,8 +158,8 @@ class_body: class_atributes class_body {
 }
 ;
 
-class_body_main: method_signature '(' atributs_method ')' '{' body return '}' class_body {
-    $$.nd = mknode($6.nd, $7.nd, "method2");
+class_body_main: TK_FUNC_DEFINITION_MAIN '(' ')' '{' body '}' {
+    $$.nd = mknode($5.nd, NULL, "method2");
 }
 | { 
     $$.nd = NULL; 
@@ -599,12 +598,12 @@ int main(int argc, char **argv)
     strcpy(file_name_current[count_file_name], argv[1]);
     FILE *fp = fopen(argv[1], "r");
     countn[count_file_name] = 1;
-    if (fp == NULL) {
+    yyin = fp;
+    if (yyin == NULL) {
         printf("Error: could not open file %s\n", argv[1]);
         return 1;
     }
 
-    yyin = fp;
 
     yyparse();
 
@@ -721,10 +720,11 @@ void check_types_atributes(const char *token, const char *type2){
             break;
         }
     }
+    if (type1 == NULL) {
+        return;
+    }
     if(!strcmp(type1, type2) || !strcmp(type2, "null"))
 		return;
-
-    printf("%s %s\n", type1, type2);
 
     sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Incompatibilidade de tipo na atribuição\n", countn[count_file_name], file_name_current[count_file_name]);
 }
