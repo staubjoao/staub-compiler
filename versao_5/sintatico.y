@@ -158,8 +158,8 @@ class_body: class_atributes class_body {
 }
 ;
 
-class_body_main: TK_FUNC_DEFINITION_MAIN '(' ')' '{' body '}' {
-    $$.nd = mknode($5.nd, NULL, "method2");
+class_body_main: TK_FUNC_DEFINITION_MAIN { scope_count++; } '(' ')' '{' body '}' {
+    $$.nd = mknode($6.nd, NULL, "method2");
 }
 | { 
     $$.nd = NULL; 
