@@ -1,8 +1,10 @@
-importa quadrado.jsc
+// importa quadrado.jsc
 // importa circulo.jsc
 
 Principal {
     principal() {
+        inteiro teste[5] = {1, 2, 3, 4, 5};
+        teste[0] = 2;
         inteiro x = 1;
 
         leia("%d", &x);

@@ -32,7 +32,9 @@
     void check_class_declaration(const char *);
     void check_declaration_previously(const char *);
     void check_atribute(const char *, const char *);
-    void check_method(const char *, const char *, int, struct param_types *head);
+    void check_method(const char *, const char *, struct param_types *head);
+    void check_vector_init(struct param_types *head);
+    void check_vector_atribt(const char *, const char *, int);
 	void function_check_return(const char *);
 	void check_types(const char *, const char *);
 	void check_types_atributes(const char *, const char *);
@@ -63,6 +65,7 @@
     int q;
 	char type[10];
     char *function_return;
+    char *vector_name_aux;
     extern int countn[2];
 	struct node *head = NULL;
 	int sem_errors=0;
@@ -70,7 +73,7 @@
 	int temp_var=0;
 	int label=0;
 	int is_for=0;
-    int param_count=0;
+    int count_param_vector=0;
     int class_scope_count=0;
     int scope_count=0;
     struct param_types *head_params_l = NULL;
@@ -96,9 +99,9 @@ struct var_name2 {
 }
 %token TK_VOID
 %token <nd_obj> TK_PRINTF TK_SCANF TK_TYPE_INT TK_TYPE_FLOAT TK_TYPE_CHAR TK_TYPE_STRING TK_RETURN TK_FOR TK_IF TK_ELSE TK_CLASS_DEFINITION TK_FUNC_DEFINITION_MAIN TK_CLASS_DEFINITION_MAIN TK_INCLUDE TK_INCLUDE_CLASS TK_TRUE TK_FALSE TK_NUMBER TK_NUMBER_FLOAT TK_ID TK_CLASS_NAME TK_UNARY TK_LE TK_GE TK_EQ TK_NE TK_GT TK_LT TK_AND TK_OR TK_STRING TK_CHARACTER
-%type <nd_obj> program class_defination class_atributes class_body class_body_main class method_signature statement_atributes 
-%type <nd_obj> datatype else body body_statement statement_class statement condition return relop atributs_method parament_method class_call params_const param_const
-%type <nd_obj2> init value expression
+%type <nd_obj> program class_defination class_atributes class_body class_body_main class method_signature statement_atributes init_vector_value init_vector_value_aux
+%type <nd_obj> datatype else body body_statement statement_class statement condition return relop atributs_method parament_method class_call params_const param_const init_vector
+%type <nd_obj2> init value expression 
 %left <nd_obj> TK_MULTIPLY TK_DIVIDE
 %left <nd_obj> TK_ADD TK_SUBTRACT
 %%
@@ -147,8 +150,8 @@ class_body: class_atributes class_body {
     $$.nd = mknode($1.nd, $2.nd, "class_body"); 
 }
 |  method_signature '(' atributs_method ')' {
-    symbol_table[method_current].num_param = param_count;
-    param_count = 0;
+    symbol_table[method_current].num_param = count_param_vector;
+    count_param_vector = 0;
 } '{' body return '}' class_body {
     struct node *aux_class = mknode($7.nd, $10.nd, "class_body");
     $$.nd = mknode(aux_class, $8.nd, "method");
@@ -159,7 +162,7 @@ class_body: class_atributes class_body {
 ;
 
 class_body_main: TK_FUNC_DEFINITION_MAIN { scope_count++; } '(' ')' '{' body '}' {
-    $$.nd = mknode($6.nd, NULL, "method2");
+    $$.nd = mknode($6.nd, NULL, "main");
 }
 | { 
     $$.nd = NULL; 
@@ -176,12 +179,12 @@ method_signature: datatype TK_ID { scope_count++; add('F'); } {
 
 atributs_method: parament_method atributs_method {
     $$.nd = mknode($1.nd, NULL, "parameter");
-    param_count++;
+    count_param_vector++;
 
 }
-| ',' parament_method {
+| ',' parament_method atributs_method{
     $$.nd = mknode($2.nd, NULL, "parameter");
-    param_count++;
+    count_param_vector++;
 }
 | {
     $$.nd = NULL;
@@ -243,6 +246,36 @@ else: TK_ELSE { add('K'); } '{' body '}' {
 }
 ;
 
+init_vector: '=' '{' init_vector_value '}' {
+    check_vector_init(head_params_l); 
+    count_param_vector = 0;
+    free_l_param(&head_params_l);
+    $$.nd = mknode($3.nd, NULL, "init_vector");
+} 
+| {
+    $$.nd = NULL;
+}
+;
+
+init_vector_value: init_vector_value_aux init_vector_value {
+    count_param_vector++;
+    $$.nd = mknode($1.nd, $2.nd, "");
+}
+| ',' init_vector_value_aux init_vector_value {
+    count_param_vector++;
+    $$.nd = mknode($2.nd, $3.nd, "");
+}
+| {
+    $$.nd = NULL;
+    vector_name_aux = NULL;
+}
+;
+
+init_vector_value_aux: value {
+    insert_at_end_l_param(&head_params_l, $1.type);
+}
+;
+
 statement_class: TK_CLASS_NAME { check_class_declaration($1.name); insert_type(); } TK_ID { add('O'); }
 ;
 
@@ -270,7 +303,7 @@ statement: datatype TK_ID { check_declaration_previously($2.name); add('V'); } i
 | TK_ID { check_declaration($1.name); } '=' expression  {
     $1.nd = mknode(NULL, NULL, $1.name); 
     char *id_type = get_type($1.name); 
-    if (id_type != NULL) {
+    if(id_type != NULL) {
         if(strcmp(id_type, $4.type)) {
             if(!strcmp(id_type, "inteiro")) {
                 if(!strcmp($4.type, "decimal")) {
@@ -324,20 +357,26 @@ statement: datatype TK_ID { check_declaration_previously($2.name); add('V'); } i
     $$.nd = mknode($1.nd, $3.nd, ".");
 }
 | class_call '(' params_const ')' { 
-    check_method($1.nd->left->token, $1.nd->right->token, param_count, head_params_l); 
+    check_method($1.nd->left->token, $1.nd->right->token, head_params_l); 
     free_l_param(&head_params_l);
-} {
     $$.nd = mknode($1.nd, $3.nd, "call_method");
-    param_count = 0;
+    count_param_vector = 0;
+}
+| datatype TK_ID { vector_name_aux=strdup($2.name); check_declaration_previously($2.name); add('J'); } '[' TK_NUMBER ']' { symbol_table[count-1].num_param = atoi($5.name); } init_vector {
+    $2.nd = mknode(NULL, NULL, $2.name); 
+    $$.nd = mknode($2.nd, $8.nd, "declaration_vector");  
+}
+| TK_ID { check_declaration($1.name); } '[' TK_NUMBER ']' '=' expression {
+    check_vector_atribt($1.name, $7.type, atoi($4.name));
+    $$.nd = mknode($1.nd, $7.nd, "=");  
 }
 ;
 
 params_const: param_const params_const {
-    param_count++;
-
+    count_param_vector++;
 }
 | ',' param_const {
-    param_count++;
+    count_param_vector++;
 }
 | {
     $$.nd = NULL;
@@ -539,19 +578,16 @@ value: TK_NUMBER {
     strcpy($$.name, $1.name); 
     sprintf($$.type, "%s", "inteiro");
     $$.nd = mknode(NULL, NULL, $1.name); 
-    // add('C'); 
 }
 | TK_NUMBER_FLOAT { 
     strcpy($$.name, $1.name); 
     sprintf($$.type, "%s", "decimal");
     $$.nd = mknode(NULL, NULL, $1.name); 
-    // add('C'); 
 }
 | TK_CHARACTER { 
     strcpy($$.name, $1.name); 
     sprintf($$.type, "%s", "caracter");
     $$.nd = mknode(NULL, NULL, $1.name); 
-    // add('C'); 
 }
 | TK_ID {
     strcpy($$.name, $1.name); 
@@ -568,7 +604,6 @@ value: TK_NUMBER {
     strcpy($$.name, $1.name); 
     sprintf($$.type, "%s", "palavra");
     $$.nd = mknode(NULL, NULL, $1.name); 
-    // add('C'); 
 }
 ;
 
@@ -599,7 +634,7 @@ int main(int argc, char **argv)
     FILE *fp = fopen(argv[1], "r");
     countn[count_file_name] = 1;
     yyin = fp;
-    if (yyin == NULL) {
+    if(yyin == NULL) {
         printf("Error: could not open file %s\n", argv[1]);
         return 1;
     }
@@ -657,8 +692,8 @@ void print_symbol_table()
     for (int i = 0; i < count; i++)
     {
         sprintf(aux_line, "%5d", symbol_table[i].line_no);
-        printf("%-25s |%-25s |%-15s |%-15s |%-7s |%3d |%3d |%-20s \n", symbol_table[i].id_name, symbol_table[i].data_type,
-               symbol_table[i].type, symbol_table[i].class_name, aux_line, symbol_table[i].class_scope, symbol_table[i].scope, symbol_table[i].file_name);
+        printf("%-25s |%-25s |%-15s |%-15s |%-7s |%3d |%3d |%-20s | %d\n", symbol_table[i].id_name, symbol_table[i].data_type,
+               symbol_table[i].type, symbol_table[i].class_name, aux_line, symbol_table[i].class_scope, symbol_table[i].scope, symbol_table[i].file_name, symbol_table[i].num_param);
     }
 }
 
@@ -681,13 +716,13 @@ void printtree(struct node* tree) {
 
 void printInorder(struct node *tree) {
 	int i;
-	if (tree->left) {
+	if(tree->left) {
 		printInorder(tree->left);
 	}
     if(strlen(tree->token) > 0) {
     	printf("%s, ", tree->token);
     }
-	if (tree->right) {
+	if(tree->right) {
 		printInorder(tree->right);
 	}
 }
@@ -720,7 +755,7 @@ void check_types_atributes(const char *token, const char *type2){
             break;
         }
     }
-    if (type1 == NULL) {
+    if(type1 == NULL) {
         return;
     }
     if(!strcmp(type1, type2) || !strcmp(type2, "null"))
@@ -774,7 +809,7 @@ void check_atribute(const char *object, const char *atribute) {
     sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O atributo %s não existe na classe %s\n", countn[count_file_name], file_name_current[count_file_name], atribute, class_name_target);
 }
 
-void check_method(const char *object, const char *method, int num_param_call, struct param_types *head) {
+void check_method(const char *object, const char *method, struct param_types *head) {
     int i, j; 
     char *class_name_target;
     for(i = count-1; i >= 0; i--) {
@@ -785,13 +820,13 @@ void check_method(const char *object, const char *method, int num_param_call, st
     }
     for(i = count-1; i >= 0; i--) {
         if((strcmp(symbol_table[i].class_name, class_name_target) == 0) && (strcmp(symbol_table[i].id_name, method) == 0)) {   
-            if (symbol_table[i].num_param != num_param_call) {
-                sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s espera %d parametros e recebeu %d\n", countn[count_file_name], file_name_current[count_file_name], method, symbol_table[i].num_param, num_param_call);
+            if(symbol_table[i].num_param != count_param_vector) {
+                sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s espera %d parametros e recebeu %d\n", countn[count_file_name], file_name_current[count_file_name], method, symbol_table[i].num_param, count_param_vector);
             }
             int count_paran_index = 1;
             struct param_types *temp = head;
-            for(j = i+1; j <= i+num_param_call; j++) {
-                if (temp != NULL) {
+            for(j = i+1; j <= i+count_param_vector; j++) {
+                if(temp != NULL) {
                     if((strcmp(symbol_table[j].data_type, temp->type) != 0)) {
                         sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O parametro de número %d, não é do tipo esperado\n", countn[count_file_name], file_name_current[count_file_name], count_paran_index);
                     }
@@ -803,6 +838,40 @@ void check_method(const char *object, const char *method, int num_param_call, st
         }
     }
     sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s não existe na classe %s\n", countn[count_file_name], file_name_current[count_file_name], method, class_name_target);
+}
+
+void check_vector_init(struct param_types *head) {
+    if(symbol_table[count-1].num_param < count_param_vector) {
+        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O vetor %s, está recebendo mais valores do que o esperado\n", countn[count_file_name], file_name_current[count_file_name], symbol_table[count-1].id_name);
+        return;
+    }else if(symbol_table[count-1].num_param > count_param_vector) {
+        sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O vetor %s, está recebendo menos valores do que o esperado\n", countn[count_file_name], file_name_current[count_file_name], symbol_table[count-1].id_name);
+        return;
+    }
+
+    struct param_types *temp = head;
+
+    while(temp != NULL) {
+        if(strcmp(temp->type, symbol_table[count-1].data_type)) {
+            sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O vetor está recebendo um tipo não esperado\n", countn[count_file_name], file_name_current[count_file_name]);
+        }
+        temp = temp->next;
+    }
+}
+
+void check_vector_atribt(const char *vector_name, const char *type, int position) {
+    int i;
+    for(i = count-1; i >= 0; i--) {
+        if(!strcmp(symbol_table[i].id_name, vector_name)) {
+            if(position >= symbol_table[i].num_param || position < 0) {
+                sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Posição invalida na atribuição do vetor %s\n", countn[count_file_name], file_name_current[count_file_name], vector_name);
+            }
+            if(strcmp(symbol_table[i].data_type, type)) {
+                sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Atibuição do vetor %s invalida, tipos diferentes\n", countn[count_file_name], file_name_current[count_file_name], vector_name);
+            }
+            break;
+        }
+    }
 }
 
 char *get_type(const char *var){
@@ -854,16 +923,6 @@ void add(char c) {
             symbol_table[count].data_type=strdup(type);
             symbol_table[count].line_no=countn[count_file_name];
             symbol_table[count].type=strdup("Variable");   
-            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
-            symbol_table[count].class_name=strdup(class_name_current);
-            symbol_table[count].class_scope=class_scope_count;
-            symbol_table[count].scope=scope_count;
-            count++;  
-        }  else if(c == 'C') {
-            symbol_table[count].id_name=strdup(yylval.nd_obj.name);
-            symbol_table[count].data_type=strdup("CONST");
-            symbol_table[count].line_no=countn[count_file_name];
-            symbol_table[count].type=strdup("Constant");   
             symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
             symbol_table[count].class_name=strdup(class_name_current);
             symbol_table[count].class_scope=class_scope_count;
@@ -942,8 +1001,17 @@ void add(char c) {
             symbol_table[count].class_scope=class_scope_count;
             symbol_table[count].scope=scope_count;
             count++;  
+        } else if(c == 'J') {
+            symbol_table[count].id_name=strdup(yylval.nd_obj.name);
+            symbol_table[count].data_type=strdup(type);
+            symbol_table[count].line_no=countn[count_file_name];
+            symbol_table[count].type=strdup("Vector");   
+            symbol_table[count].file_name=strdup(file_name_current[count_file_name]);
+            symbol_table[count].class_name=strdup(class_name_current);
+            symbol_table[count].class_scope=class_scope_count;
+            symbol_table[count].scope=scope_count;
+            count++; 
         }
-
     }
 }
 
@@ -968,7 +1036,7 @@ int search(const char *type, int cl_scope, int f_scope) {
 
 void insert_at_end_l_param(struct param_types **head, char *type) {
     struct param_types *newNode = (struct param_types *)malloc(sizeof(struct param_types));
-    if (newNode == NULL) {
+    if(newNode == NULL) {
         printf("Erro ao alocar memória do, função %s\n", "insert_at_end_l_param");
         exit(1);
     }
@@ -976,7 +1044,7 @@ void insert_at_end_l_param(struct param_types **head, char *type) {
     newNode->type=strdup(type);
     newNode->next = NULL;
 
-    if (*head == NULL) {
+    if(*head == NULL) {
         *head = newNode;
         return;
     }
