@@ -1,0 +1,43 @@
+importa quadrado.jsc
+// importa circulo.jsc
+
+Principal {
+    principal() {
+        inteiro teste[5] = {1, 2, 3, 4, 5};
+        teste[0] = 2;
+        inteiro x = 1;
+
+        x = 1;
+
+        leia("%d", &x);
+
+        inteiro ladoQuadrado;
+
+        palavra cor;
+        
+        x = 35;
+
+
+        inteiro i = 0;
+        enquanto(i < 10) {
+            imprime("teste");
+            i++;
+        }
+
+        se(x == 35) {
+            inteiro y;
+            imprime("Teste");
+            imprime("Teste");
+        } senao {
+            imprime("Teste");
+        }
+
+        // Circulo circulo;
+
+        // circulo.raio = 1.1;
+        // circulo.calculaArea(x, 1.1);
+
+        Quadrado quadrado;
+        x = quadrado.calculaArea(1, 1);
+    }
+}
