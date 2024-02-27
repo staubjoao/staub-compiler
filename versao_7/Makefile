@@ -19,7 +19,7 @@ debug:	PARSER_PARAMS += -Wcounterexamples -Wconflicts-sr -Wconflicts-rr -Wcex -W
 debug: 	all
 
 translate: glf
-		./glf arquivos/principal.jsc
+		./glf arquivos_e/principal.jsc
 
 clear:
 	rm y.tab.c

@@ -1,0 +1,17 @@
+forma Quadrado {
+
+    palavra cor;
+    inteiro lado;
+
+    inteiro calculaArea(inteiro teste, inteiro teste2) {
+        inteiro ladoQuadrado = lado * lado;
+        retorno ladoQuadrado;
+    }
+
+    inteiro calcularPerimetro() {
+        inteiro perimetro = lado * 4;
+        decimal teste = 1.1;
+        retorno teste;
+    }
+
+}

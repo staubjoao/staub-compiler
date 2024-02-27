@@ -89,7 +89,7 @@ class_body_main: TK_FUNC_DEFINITION_MAIN { scope_count++; } '(' ')' '{' body_mai
 ;
 
 
-method_signature: datatype TK_ID { scope_count++; add('F'); } {
+method_signature: datatype TK_ID { check_method_declaration_previously($2.name); scope_count++; add('F'); } {
     $$.nd = mknode(NULL, NULL, $2.name);
     method_current = count-1;
 }
@@ -526,7 +526,7 @@ value: TK_NUMBER {
 ;
 
 return: TK_RETURN { add('R'); } value ';' { 
-    check_function_return($3.type); 
+    check_function_return($3.name); 
     $1.nd = mknode(NULL, NULL, "return"); 
     $$.nd = mknode($1.nd, $3.nd, "RETURN"); 
 }
@@ -653,10 +653,10 @@ void insert_type() {
     strcpy(type, yytext);
 }
 
-void check_function_return(const char *value) {
+void check_function_return(const char *name) {
 	char *function_datatype = get_type_function(symbol_table[count-1].data_type, symbol_table[count-1].class_scope);
-    char *return_datatype = get_type(value);
-    if (strcmp(value, function_datatype)) {
+    char *return_datatype = get_type(name);
+    if (strcmp(return_datatype, function_datatype)) {
         sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Incompatibilidade de tipo de retorno\n", countn[count_file_name], file_name_current[count_file_name]);
     }
 }
@@ -766,6 +766,19 @@ void check_method(const char *object, const char *method, struct param_types *he
     sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s não existe na classe %s\n", countn[count_file_name], file_name_current[count_file_name], method, class_name_target);
 }
 
+void check_method_declaration_previously(const char *name) {
+    int i; 
+    for (i = count-1; i >= 0; i--)  {
+        if (symbol_table[i].class_scope != class_scope_count) {
+            break;
+        }
+        if (!strcmp(symbol_table[i].id_name, name) && symbol_table[i].class_scope == class_scope_count) {   
+            sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s já foi declarado anteriormente\n", countn[count_file_name], file_name_current[count_file_name], name);
+            break;
+        }
+    }
+}
+
 void check_vector_init(struct param_types *head) {
     if (symbol_table[count-1].num_param < count_param_vector) {
         sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O vetor %s, está recebendo mais valores do que o esperado\n", countn[count_file_name], file_name_current[count_file_name], symbol_table[count-1].id_name);
@@ -801,7 +814,7 @@ void check_vector_atribt(const char *vector_name, const char *type, int position
 }
 
 char *get_type(const char *var){
-	for (int i = 0; i < count; i++)  {
+	for (int i = count-1; i >= 0; i--)  {
 		if (!strcmp(symbol_table[i].id_name, var)) {
 			return symbol_table[i].data_type;
 		}

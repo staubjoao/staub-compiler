@@ -1600,13 +1600,13 @@ yyreduce:
 
   case 15: /* $@5: %empty  */
 #line 92 "parser.y"
-                                 { scope_count++; add('F'); }
+                                 { check_method_declaration_previously((yyvsp[0].nd_obj).name); scope_count++; add('F'); }
 #line 1605 "y.tab.c"
     break;
 
   case 16: /* method_signature: datatype TK_ID $@5  */
 #line 92 "parser.y"
-                                                              {
+                                                                                                            {
     (yyval.nd_obj).nd = mknode(NULL, NULL, (yyvsp[-1].nd_obj).name);
     method_current = count-1;
 }
@@ -2473,7 +2473,7 @@ yyreduce:
   case 116: /* return: TK_RETURN $@30 value ';'  */
 #line 528 "parser.y"
                                           { 
-    check_function_return((yyvsp[-1].nd_obj2).type); 
+    check_function_return((yyvsp[-1].nd_obj2).name); 
     (yyvsp[-3].nd_obj).nd = mknode(NULL, NULL, "return"); 
     (yyval.nd_obj).nd = mknode((yyvsp[-3].nd_obj).nd, (yyvsp[-1].nd_obj2).nd, "RETURN"); 
 }
@@ -2801,10 +2801,10 @@ void insert_type() {
     strcpy(type, yytext);
 }
 
-void check_function_return(const char *value) {
+void check_function_return(const char *name) {
 	char *function_datatype = get_type_function(symbol_table[count-1].data_type, symbol_table[count-1].class_scope);
-    char *return_datatype = get_type(value);
-    if (strcmp(value, function_datatype)) {
+    char *return_datatype = get_type(name);
+    if (strcmp(return_datatype, function_datatype)) {
         sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: Incompatibilidade de tipo de retorno\n", countn[count_file_name], file_name_current[count_file_name]);
     }
 }
@@ -2914,6 +2914,19 @@ void check_method(const char *object, const char *method, struct param_types *he
     sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s não existe na classe %s\n", countn[count_file_name], file_name_current[count_file_name], method, class_name_target);
 }
 
+void check_method_declaration_previously(const char *name) {
+    int i; 
+    for (i = count-1; i >= 0; i--)  {
+        if (symbol_table[i].class_scope != class_scope_count) {
+            break;
+        }
+        if (!strcmp(symbol_table[i].id_name, name) && symbol_table[i].class_scope == class_scope_count) {   
+            sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O método %s já foi declarado anteriormente\n", countn[count_file_name], file_name_current[count_file_name], name);
+            break;
+        }
+    }
+}
+
 void check_vector_init(struct param_types *head) {
     if (symbol_table[count-1].num_param < count_param_vector) {
         sprintf(errors[sem_errors++], "Erro semântico na linha %d, arquivo %s: O vetor %s, está recebendo mais valores do que o esperado\n", countn[count_file_name], file_name_current[count_file_name], symbol_table[count-1].id_name);
@@ -2949,7 +2962,7 @@ void check_vector_atribt(const char *vector_name, const char *type, int position
 }
 
 char *get_type(const char *var){
-	for (int i = 0; i < count; i++)  {
+	for (int i = count-1; i >= 0; i--)  {
 		if (!strcmp(symbol_table[i].id_name, var)) {
 			return symbol_table[i].data_type;
 		}

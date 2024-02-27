@@ -61,6 +61,7 @@ void check_class_declaration(const char *);
 void check_declaration_previously(const char *);
 void check_atribute(const char *, const char *);
 void check_method(const char *, const char *, struct param_types *head);
+void check_method_declaration_previously(const char *);
 void check_vector_init(struct param_types *head);
 void check_vector_atribt(const char *, const char *, int);
 void check_function_return(const char *);
