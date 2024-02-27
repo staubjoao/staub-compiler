@@ -1,0 +1,35 @@
+importa circulo.jsc;
+// importa quadrado.jsc;
+
+Principal {
+    inteiro principal() {
+
+        inteiro x;
+
+        leia("%d", &x);
+
+        
+        x = 35;
+
+
+        inteiro i = 0;
+        enquanto(i < 10) {
+            imprime("teste");
+            i++;
+        }
+
+        se(x == 35) {
+            inteiro y;
+            imprime("Teste");
+            imprime("Teste");
+        } senao {
+            imprime("Teste");
+        }
+
+        // teste
+        Circulo circulo = Circulo();
+
+        circulo.raio = 5.1;
+        retorno x;
+    }
+}

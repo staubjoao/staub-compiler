@@ -1,7 +1,7 @@
 SCANNER := lex
-SCANNER_PARAMS := dic.l
+SCANNER_PARAMS := dictionary.l
 PARSER := yacc
-PARSER_PARAMS := -d sintatico.y
+PARSER_PARAMS := -d parser.y
 
 all: compile translate
 
@@ -19,7 +19,7 @@ debug:	PARSER_PARAMS += -Wcounterexamples -Wconflicts-sr -Wconflicts-rr -Wcex -W
 debug: 	all
 
 translate: glf
-		./glf principal.jsc
+		./glf arquivos/principal.jsc
 
 clear:
 	rm y.tab.c
