@@ -1,0 +1,5 @@
+Para compilar o código-fonte, utilize o comando "make".
+
+Primeiramente, serão compilados os arquivos localizados no diretório "/arquivos", os quais estão livres de erros.
+
+Para compilar a coleção de arquivos com erros sintáticos, altere o diretório no Makefile de "/arquivos" para "/arquivos_e".
